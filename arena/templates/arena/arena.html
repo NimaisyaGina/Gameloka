@@ -1,0 +1,352 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Arena Jawara - Gameloka{% endblock %}
+
+{% block content %}
+<div id="app" style="background: linear-gradient(135deg, #C0392B 0%, #F1C40F 100%); min-height: 100vh; padding: 24px; display: flex; align-items: center; justify-content: center;">
+    <div style="max-width: 600px; width: 100%;">
+        
+      
+        <div id="idle-state" class="screen" style="display: block;">
+            <div style="background: white; border-radius: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.15); padding: 48px 32px; text-align: center;">
+             
+                <div style="display: flex; justify-content: center; margin-bottom: 24px;">
+                    <div style="background: linear-gradient(135deg, #C0392B 0%, #F1C40F 100%); padding: 24px; border-radius: 50%; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;">
+                        <span style="font-size: 48px;">⚡</span>
+                    </div>
+                </div>
+
+                
+                <h1 style="color: #C0392B; font-size: 32px; font-weight: 800; margin-bottom: 16px;">🥋 Arena Jawara</h1>
+                
+                
+                <p style="color: #666; font-size: 16px; margin-bottom: 32px; line-height: 1.6;">
+                    Uji kemampuan bahasa Betawi kamu dengan tantangan cepat!
+                </p>
+
+                
+                <div style="background: #FAF3E0; border-radius: 16px; padding: 24px; margin-bottom: 32px; text-align: left;">
+                    <h3 style="color: #C0392B; font-weight: 700; margin-bottom: 16px; font-size: 16px;">Aturan Main:</h3>
+                    <ul style="list-style: none; padding: 0; margin: 0; space-y: 8px;">
+                        <li style="margin-bottom: 8px; color: #333;">⚡ 5 soal acak setiap permainan</li>
+                        <li style="margin-bottom: 8px; color: #333;">⏱️ 10 detik per soal</li>
+                        <li style="margin-bottom: 8px; color: #333;">🎯 +20 poin untuk jawaban benar</li>
+                        <li style="color: #333;">🏆 Skor disimpan di leaderboard</li>
+                    </ul>
+                </div>
+
+              
+                <button onclick="startGame()" style="background: linear-gradient(135deg, #C0392B 0%, #F1C40F 100%); color: white; border: none; padding: 16px 48px; border-radius: 25px; font-weight: 700; font-size: 16px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                    Mulai Bertarung!
+                </button>
+            </div>
+        </div>
+
+       
+        <div id="playing-state" class="screen" style="display: none;">
+            <div style="background: white; border-radius: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.15); padding: 32px;">
+               
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="color: #C0392B; font-weight: 700;">⚡ Soal <span id="current-question">1</span>/<span id="total-questions">5</span></span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="color: #C0392B; font-weight: 700;">🏆 Skor: <span id="current-score">0</span></span>
+                    </div>
+                </div>
+
+               
+                <div style="width: 100%; height: 8px; background: #e0e0e0; border-radius: 10px; margin-bottom: 32px; overflow: hidden;">
+                    <div id="progress-bar" style="height: 100%; background: linear-gradient(90deg, #C0392B 0%, #F1C40F 100%); width: 20%; transition: width 0.3s ease;"></div>
+                </div>
+
+                
+                <div style="display: flex; justify-content: center; margin-bottom: 32px;">
+                    <div id="timer" style="background: #27AE60; color: white; border-radius: 50%; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: 800; transition: all 0.3s;">
+                        10
+                    </div>
+                </div>
+
+               
+                <div style="margin-bottom: 32px;">
+                    <h2 id="question-text" style="color: #C0392B; font-size: 20px; font-weight: 700; text-align: center; margin: 0;">
+                        Apa arti kata 'Gue' dalam bahasa Betawi?
+                    </h2>
+                </div>
+
+               
+                <div id="options-container" style="display: grid; grid-template-columns: 1fr; gap: 12px;">
+                   
+                </div>
+            </div>
+        </div>
+
+        <div id="finished-state" class="screen" style="display: none;">
+            <div style="background: white; border-radius: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.15); padding: 48px 32px; text-align: center;">
+                <div style="display: flex; justify-content: center; margin-bottom: 24px;">
+                    <div style="background: linear-gradient(135deg, #F1C40F 0%, #C0392B 100%); padding: 24px; border-radius: 50%; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;">
+                        <span style="font-size: 48px;">🏆</span>
+                    </div>
+                </div>
+
+               
+                <h1 style="color: #C0392B; font-size: 32px; font-weight: 800; margin-bottom: 24px;">Pertarungan Selesai!</h1>
+
+                
+                <div style="background: linear-gradient(135deg, #C0392B 0%, #F1C40F 100%); color: white; border-radius: 16px; padding: 32px; margin-bottom: 32px;">
+                    <p style="color: rgba(255,255,255,0.8); margin-bottom: 8px; font-size: 14px;">Skor Akhir</p>
+                    <p id="final-score" style="font-size: 56px; font-weight: 800; margin: 0;">0</p>
+                </div>
+
+                
+                <div style="background: #FAF3E0; border-radius: 16px; padding: 24px; margin-bottom: 32px;">
+                    <p id="result-message" style="color: #333; font-size: 16px; margin: 0;">
+                        🎉 Luar biasa! Kamu adalah Jawara sejati!
+                    </p>
+                </div>
+
+               
+                <div style="display: flex; gap: 12px; justify-content: center;">
+                    <button onclick="startGame()" style="background: linear-gradient(135deg, #C0392B 0%, #F1C40F 100%); color: white; border: none; padding: 14px 32px; border-radius: 25px; font-weight: 700; font-size: 16px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                        🔄 Coba Lagi
+                    </button>
+                    <button onclick="goToHome()" style="background: white; color: #C0392B; border: 2px solid #C0392B; padding: 14px 32px; border-radius: 25px; font-weight: 700; font-size: 16px; cursor: pointer; transition: all 0.3s;">
+                        Kembali
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+
+let allQuestions = [];
+try {
+    allQuestions = JSON.parse('{{ questions|escapejs }}');
+    console.log('Questions loaded:', allQuestions.length);
+} catch (e) {
+    console.error('Error parsing questions:', e);
+    allQuestions = [];
+}
+
+let gameState = 'idle';
+let currentQuestionIndex = 0;
+let score = 0;
+let timeLeft = 10;
+let shuffledQuestions = [];
+let answered = false;
+let selectedAnswer = null;
+let timerInterval = null;
+
+function startGame() {
+    if (!allQuestions || allQuestions.length === 0) {
+        alert('Error: Soal tidak bisa dimuat. Silakan refresh halaman.');
+        console.error('allQuestions is empty:', allQuestions);
+        return;
+    }
+    
+   
+    const shuffled = [...allQuestions].sort(() => Math.random() - 0.5).slice(0, 5);
+    shuffledQuestions = shuffled;
+    
+    gameState = 'playing';
+    currentQuestionIndex = 0;
+    score = 0;
+    timeLeft = 10;
+    answered = false;
+    selectedAnswer = null;
+    
+    showState('playing');
+    loadQuestion();
+    startTimer();
+}
+
+function loadQuestion() {
+    const question = shuffledQuestions[currentQuestionIndex];
+    
+    document.getElementById('current-question').textContent = currentQuestionIndex + 1;
+    document.getElementById('total-questions').textContent = shuffledQuestions.length;
+    document.getElementById('current-score').textContent = score;
+    document.getElementById('question-text').textContent = question.question;
+    
+   
+    const progress = ((currentQuestionIndex + 1) / shuffledQuestions.length) * 100;
+    document.getElementById('progress-bar').style.width = progress + '%';
+    
+  
+    const container = document.getElementById('options-container');
+    container.innerHTML = '';
+    
+    question.options.forEach((option, index) => {
+        const button = document.createElement('button');
+        button.innerHTML = option;
+        button.style.cssText = `
+            padding: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            background: #f5f5f5;
+            color: #333;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 15px;
+        `;
+        
+        button.onmouseover = function() {
+            if (!answered) {
+                this.style.background = '#e8e8e8';
+                this.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+            }
+        };
+        
+        button.onmouseout = function() {
+            if (!answered) {
+                this.style.background = '#f5f5f5';
+                this.style.boxShadow = 'none';
+            }
+        };
+        
+        button.onclick = () => handleAnswer(index);
+        container.appendChild(button);
+    });
+    
+    answered = false;
+    selectedAnswer = null;
+    timeLeft = 10;
+    updateTimer();
+}
+
+function handleAnswer(answerIndex) {
+    if (answered) return;
+    
+    answered = true;
+    selectedAnswer = answerIndex;
+    const question = shuffledQuestions[currentQuestionIndex];
+    
+   
+    const buttons = document.querySelectorAll('#options-container button');
+    buttons.forEach((btn, index) => {
+        if (index === question.correct) {
+            btn.style.background = '#27AE60';
+            btn.style.color = 'white';
+            btn.style.borderColor = '#27AE60';
+        } else if (index === answerIndex) {
+            btn.style.background = '#C0392B';
+            btn.style.color = 'white';
+            btn.style.borderColor = '#C0392B';
+        }
+        btn.style.cursor = 'not-allowed';
+    });
+    
+  
+    if (answerIndex === question.correct) {
+        score += 20;
+        document.getElementById('current-score').textContent = score;
+    }
+    
+   
+    setTimeout(() => {
+        nextQuestion();
+    }, 1000);
+}
+
+function nextQuestion() {
+    if (currentQuestionIndex < shuffledQuestions.length - 1) {
+        currentQuestionIndex++;
+        loadQuestion();
+    } else {
+        finishGame();
+    }
+}
+
+function startTimer() {
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+        if (!answered && gameState === 'playing') {
+            timeLeft--;
+            updateTimer();
+            
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                answered = true;
+                nextQuestion();
+            }
+        }
+    }, 1000);
+}
+
+function updateTimer() {
+    const timerEl = document.getElementById('timer');
+    timerEl.textContent = timeLeft;
+    
+    if (timeLeft <= 3) {
+        timerEl.style.background = '#C0392B';
+        timerEl.style.animation = 'pulse 0.5s infinite';
+    } else {
+        timerEl.style.background = '#27AE60';
+        timerEl.style.animation = 'none';
+    }
+}
+
+function finishGame() {
+    if (timerInterval) clearInterval(timerInterval);
+    gameState = 'finished';
+    
+    
+    document.getElementById('final-score').textContent = score;
+    
+  
+    let message = '';
+    if (score >= 80) {
+        message = '🎉 Luar biasa! Kamu adalah Jawara sejati!';
+    } else if (score >= 60) {
+        message = '👍 Bagus! Terus belajar ya!';
+    } else if (score >= 40) {
+        message = '💪 Lumayan! Masih bisa lebih baik!';
+    } else {
+        message = '📚 Jangan menyerah! Coba lagi!';
+    }
+    document.getElementById('result-message').textContent = message;
+    
+
+    saveToLeaderboard();
+    
+    showState('finished');
+}
+
+function saveToLeaderboard() {
+    const leaderboard = JSON.parse(localStorage.getItem('gameloka-leaderboard') || '[]');
+    const newEntry = {
+        name: 'Jawara ' + Math.floor(Math.random() * 10000),
+        score: score,
+        tag: 'Arena Jawara',
+        date: new Date().toISOString()
+    };
+    leaderboard.push(newEntry);
+    localStorage.setItem('gameloka-leaderboard', JSON.stringify(leaderboard));
+}
+
+function showState(state) {
+    document.getElementById('idle-state').style.display = state === 'idle' ? 'block' : 'none';
+    document.getElementById('playing-state').style.display = state === 'playing' ? 'block' : 'none';
+    document.getElementById('finished-state').style.display = state === 'finished' ? 'block' : 'none';
+}
+
+function goToHome() {
+    window.location.href = '/';
+}
+
+
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+    }
+`;
+document.head.appendChild(style);
+</script>
+{% endblock %}
