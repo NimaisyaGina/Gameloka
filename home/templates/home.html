@@ -58,7 +58,7 @@
         <!-- Feature Grid: 4 Columns with White Cards -->
         <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
             {% for feature in features %}
-            <div style="background: white; border-radius: 24px; padding: 28px 20px; text-align: center; transition: transform 0.3s, box-shadow 0.3s; cursor: pointer; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08); border: 2px solid #f5f5f5;" onmouseover="this.style.transform='translateY(-6px)'; this.style.boxShadow='0 8px 24px rgba(0, 0, 0, 0.12)'; this.style.borderColor='#FF9D3D';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 12px rgba(0, 0, 0, 0.08)'; this.style.borderColor='#f5f5f5';">
+            <div data-feature-id="{{ feature.id }}" style="background: white; border-radius: 24px; padding: 28px 20px; text-align: center; transition: transform 0.3s, box-shadow 0.3s; cursor: pointer; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08); border: 2px solid #f5f5f5;" onmouseover="this.style.transform='translateY(-6px)'; this.style.boxShadow='0 8px 24px rgba(0, 0, 0, 0.12)'; this.style.borderColor='#FF9D3D';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 12px rgba(0, 0, 0, 0.08)'; this.style.borderColor='#f5f5f5';">
                 <div style="font-size: 56px; margin-bottom: 12px;">
                     {{ feature.emoji }}
                 </div>
@@ -106,5 +106,45 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         }
     });
 });
+
+// Feature card navigation
+document.querySelectorAll('[data-feature-id]').forEach(card => {
+    card.addEventListener('click', function() {
+        const featureId = this.getAttribute('data-feature-id');
+        
+        // Map feature IDs to URLs
+        const featureRoutes = {
+            'kompas': '/kompas/',
+            'pustaka': '/pustaka/',
+            'arena': '/arena/',
+            'leaderboard': '/leaderboard/',
+            'cerita': '/cerita/'
+        };
+        
+        if (featureRoutes[featureId]) {
+            window.location.href = featureRoutes[featureId];
+        }
+    });
+});
+
+// CTA button handlers
+document.querySelectorAll('button').forEach(btn => {
+    if (btn.textContent.includes('Mulai Belajar')) {
+        btn.addEventListener('click', () => {
+            if (isLoggedIn) {
+                window.location.href = '/kompas/';
+            } else {
+                window.location.href = '/login/';
+            }
+        });
+    }
+
+    if (btn.textContent.includes('Daftar Sekarang')) {
+        btn.addEventListener('click', () => {
+            window.location.href = '/register/';
+        });
+    }
+});
+
 </script>
 {% endblock %}

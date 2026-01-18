@@ -36,6 +36,14 @@ class HomePageView(TemplateView):
                 'icon': 'compass'
             },
             {
+                'id': 'pustaka',
+                'title': 'Pustaka Belajar',
+                'description': 'Kumpulan artikel tentang budaya Betawi',
+                'emoji': '📚',
+                'color': '#2980B9',
+                'icon': 'book'
+            },
+            {
                 'id': 'cerita',
                 'title': 'Cerita Kami',
                 'description': 'Berbagi pengalaman belajar bersama komunitas',

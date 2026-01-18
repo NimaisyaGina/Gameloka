@@ -21,4 +21,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('home.urls')),
     path('arena/', include('arena.urls')),
+    path('auth/', include('profileuser.urls')),
+    path('kompas/', include('kompas.urls')),
+    path('leaderboard/', include('leaderboard.urls')),
+    path('pustaka/', include('pustaka.urls')),
 ]
