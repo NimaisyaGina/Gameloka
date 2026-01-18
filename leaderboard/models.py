@@ -130,4 +130,3 @@ class LeaderboardEntry(models.Model):
             'highest_score': max_score or 0,
             'average_score': round(avg_score or 0, 2)
         }
-

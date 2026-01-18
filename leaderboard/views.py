@@ -159,4 +159,3 @@ def format_leaderboard_data(raw_data):
         })
     
     return formatted
-
