@@ -24,4 +24,5 @@ urlpatterns = [
     path('auth/', include('profileuser.urls')),
     path('kompas/', include('kompas.urls')),
     path('leaderboard/', include('leaderboard.urls')),
+    path('pustaka/', include('pustaka.urls')),
 ]
