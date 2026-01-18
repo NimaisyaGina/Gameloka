@@ -22,4 +22,5 @@ urlpatterns = [
     path('', include('home.urls')),
     path('arena/', include('arena.urls')),
     path('auth/', include('profileuser.urls')),
+    path('leaderboard/', include('leaderboard.urls')),
 ]
