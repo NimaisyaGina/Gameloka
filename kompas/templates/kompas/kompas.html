@@ -17,19 +17,19 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
         }
 
-        .gradient-green {
+        .gradient-dasar {
             background: linear-gradient(135deg, #27AE60 0%, #2ECC71 100%);
         }
 
-        .gradient-blue {
+        .gradient-menengah {
             background: linear-gradient(135deg, #3498DB 0%, #2980B9 100%);
         }
 
-        .gradient-orange {
+        .gradient-lanjut {
             background: linear-gradient(135deg, #F39C12 0%, #E67E22 100%);
         }
 
-        .gradient-pink {
+        .gradient-budaya {
             background: linear-gradient(135deg, #E91E63 0%, #C2185B 100%);
         }
 
@@ -47,12 +47,6 @@
             transform: translateY(-4px);
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
         }
-
-        .topic-card.locked {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
         .topic-card.completed {
             background: rgba(39, 174, 96, 0.1);
             border: 2px solid #27AE60;
@@ -88,12 +82,8 @@
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         @keyframes slideUp {
@@ -150,30 +140,10 @@
                 width: 95%;
                 padding: 1.5rem;
             }
-        }
 
-        .checkbox-icon {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-        }
-
-        .checkbox-completed {
-            background-color: #27AE60;
-        }
-
-        .checkbox-pending {
-            background-color: #BDC3C7;
-            border: 2px solid #95A5A6;
-        }
-
-        .checkbox-locked {
-            background-color: #95A5A6;
+            [style*="display: grid"][style*="grid-template-columns: 1fr 2fr"] {
+                grid-template-columns: 1fr !important;
+            }
         }
 
         .example-item {
@@ -200,7 +170,15 @@
 </head>
 <body style="background: linear-gradient(135deg, #27AE60 0%, #F1C40F 50%, #A4C639 100%); min-height: 100vh;">
     <div style="max-width: 1280px; margin: 0 auto; padding: 2rem 1rem;">
-        <!-- Header -->
+        
+        <div style="margin-bottom: 2rem;">
+            <a href="/" style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.2); color: white; padding: 0.75rem 1.5rem; border-radius: 25px; text-decoration: none; font-weight: 600; transition: all 0.3s; border: 2px solid rgba(255,255,255,0.3);" onmouseover="this.style.background='rgba(255,255,255,0.3)'; this.style.borderColor='rgba(255,255,255,0.5)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'; this.style.borderColor='rgba(255,255,255,0.3)'">
+                <span style="font-size: 18px;">←</span>
+                <span>Kembali ke Beranda</span>
+            </a>
+        </div>
+
+      
         <div style="text-align: center; margin-bottom: 3rem; color: white;">
             <div style="display: inline-block; background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); padding: 0.5rem 1rem; border-radius: 9999px; margin-bottom: 1rem; font-size: 14px; font-weight: 600;">
                 🧭 Jalur Pembelajaran
@@ -209,14 +187,14 @@
             <p style="font-size: 1rem; color: rgba(255,255,255,0.9);">Panduan lengkap belajar bahasa Betawi dari tingkat dasar hingga mahir</p>
         </div>
 
-        <!-- Main Content -->
+    
         <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; margin-bottom: 2rem;">
-            <!-- Sidebar -->
+            
             <div class="sidebar" style="position: sticky; top: 2rem; height: fit-content;">
                 <div style="background: white; border-radius: 1.5rem; box-shadow: 0 20px 60px rgba(0,0,0,0.2); padding: 1.5rem;">
-                    <!-- Header Sidebar -->
+                 
                     <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
-                        <div class="gradient-green" style="width: 48px; height: 48px; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center;">
+                        <div class="gradient-primary" style="width: 48px; height: 48px; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center;">
                             <span style="font-size: 24px;">🧭</span>
                         </div>
                         <div>
@@ -225,7 +203,7 @@
                         </div>
                     </div>
 
-                    <!-- Progress Card -->
+                   
                     <div style="background-color: #FAF3E0; border-radius: 1rem; padding: 1rem; margin-bottom: 1.5rem;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
                             <span style="font-size: 14px; font-weight: 600; color: #27AE60;">Progress Belajar</span>
@@ -237,29 +215,29 @@
                         <p style="margin-top: 0.75rem; font-size: 12px; color: #666;" id="progress-text">0 dari 0 topik selesai</p>
                     </div>
 
-                    <!-- Level Buttons -->
+                   
                     <div style="display: flex; flex-direction: column; gap: 0.5rem;" id="level-buttons">
-                        <!-- Will be populated by JavaScript -->
+                       
                     </div>
                 </div>
             </div>
 
-            <!-- Content Area -->
+           
             <div style="background: white; border-radius: 1.5rem; box-shadow: 0 20px 60px rgba(0,0,0,0.2); padding: 1.5rem;">
                 <h3 style="font-size: 20px; font-weight: 700; color: #333; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
                     <span style="font-size: 20px;">📚</span>
                     <span id="level-title">Level</span>
                 </h3>
 
-                <!-- Topics Grid -->
+               
                 <div style="display: grid; grid-template-columns: 1fr; gap: 1rem;" id="topics-container">
-                    <!-- Will be populated by JavaScript -->
+                   
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal -->
+ 
     <div class="modal" id="topicModal">
         <div class="modal-content">
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
@@ -278,11 +256,11 @@
 
             <h3 style="font-size: 16px; font-weight: 700; color: #333; margin-bottom: 1rem;">Contoh:</h3>
             <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.5rem;" id="modal-examples">
-                <!-- Will be populated by JavaScript -->
+             
             </div>
 
             <div style="display: flex; gap: 1rem;">
-                <button id="completeBtn" onclick="completeCurrentTopic()" style="flex: 1; padding: 0.75rem 1.5rem; border-radius: 9999px; border: none; color: white; font-weight: 700; cursor: pointer; transition: all 0.3s;" class="gradient-green">
+                <button id="completeBtn" onclick="completeCurrentTopic()" style="flex: 1; padding: 0.75rem 1.5rem; border-radius: 9999px; border: none; color: white; font-weight: 700; cursor: pointer; transition: all 0.3s;" class="gradient-primary">
                     Tandai Selesai
                 </button>
                 <button onclick="closeModal()" style="flex: 1; padding: 0.75rem 1.5rem; border-radius: 9999px; border: none; background-color: #E0E0E0; color: #333; font-weight: 700; cursor: pointer; transition: all 0.3s;">
@@ -302,7 +280,22 @@
         let currentLevel = 'dasar';
         let currentTopic = null;
 
-        // Load data
+      
+        const colorMap = {
+            '#27AE60': 'dasar',
+            '#3498DB': 'menengah',
+            '#F39C12': 'lanjut',
+            '#E91E63': 'budaya'
+        };
+
+        const gradientMap = {
+            '#27AE60': 'gradient-dasar',
+            '#3498DB': 'gradient-menengah',
+            '#F39C12': 'gradient-lanjut',
+            '#E91E63': 'gradient-budaya'
+        };
+
+     
         function loadData() {
             const dataScript = document.getElementById('learning-data');
             if (dataScript && dataScript.textContent.trim()) {
@@ -320,7 +313,7 @@
             }
         }
 
-        // Render level buttons
+   
         function renderLevelButtons() {
             const container = document.getElementById('level-buttons');
             container.innerHTML = '';
@@ -330,13 +323,11 @@
                 const button = document.createElement('button');
                 button.className = 'level-button' + (currentLevel === level.id ? ' active' : '');
                 
-                let gradientClass = '';
-                if (level.color.includes('green')) gradientClass = 'gradient-green';
-                else if (level.color.includes('blue')) gradientClass = 'gradient-blue';
-                else if (level.color.includes('orange')) gradientClass = 'gradient-orange';
-                else if (level.color.includes('pink')) gradientClass = 'gradient-pink';
+                const gradientClass = gradientMap[level.color];
 
-                button.style.cssText = currentLevel === level.id ? `background: linear-gradient(135deg, ${level.color.includes('green') ? '#27AE60' : level.color.includes('blue') ? '#3498DB' : level.color.includes('orange') ? '#F39C12' : '#E91E63'} 0%, ${level.color.includes('green') ? '#2ECC71' : level.color.includes('blue') ? '#2980B9' : level.color.includes('orange') ? '#E67E22' : '#C2185B'} 100%); color: white;` : '';
+                if (currentLevel === level.id) {
+                    button.classList.add(gradientClass);
+                }
 
                 button.innerHTML = `
                     <div style="display: flex; align-items: center; justify-content: space-between;">
@@ -355,14 +346,14 @@
             updateProgress();
         }
 
-        // Select level
+    
         function selectLevel(levelId) {
             currentLevel = levelId;
             renderLevelButtons();
             renderTopics();
         }
 
-        // Render topics
+       
         function renderTopics() {
             const level = learningPath.find(l => l.id === currentLevel);
             if (!level) return;
@@ -377,9 +368,7 @@
                 const card = document.createElement('div');
                 card.className = 'topic-card' + (isCompleted ? ' completed' : '');
                 
-                const iconColor = level.color.includes('green') ? '#27AE60' : 
-                                level.color.includes('blue') ? '#3498DB' : 
-                                level.color.includes('orange') ? '#F39C12' : '#E91E63';
+                const iconColor = level.color;
 
                 card.innerHTML = `
                     <div style="display: flex; align-items: flex-start; gap: 1rem; padding: 1.25rem; border: 2px solid ${isCompleted ? '#27AE60' : '#E0E0E0'}; border-radius: 1rem; background-color: ${isCompleted ? 'rgba(39, 174, 96, 0.1)' : '#FAFAFA'};">
@@ -390,7 +379,7 @@
                             <h4 style="font-size: 16px; font-weight: 700; color: #333; margin-bottom: 0.5rem;">${topic.title}</h4>
                             <p style="font-size: 14px; color: #666; line-height: 1.5;">${topic.content}</p>
                         </div>
-                        ${!isCompleted ? `<span style="color: #999;">→</span>` : `<span style="background-color: rgba(39, 174, 96, 0.2); color: #27AE60; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 12px; font-weight: 600; white-space: nowrap;">Selesai</span>`}
+                        ${!isCompleted ? `<span style="color: #999; flex-shrink: 0;">→</span>` : `<span style="background-color: rgba(39, 174, 96, 0.2); color: #27AE60; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 12px; font-weight: 600; white-space: nowrap; flex-shrink: 0;">Selesai</span>`}
                     </div>
                 `;
 
@@ -399,7 +388,7 @@
             });
         }
 
-        // Open modal
+       
         function openModal(topic) {
             currentTopic = topic;
             const level = learningPath.find(l => l.topics.some(t => t.id === topic.id));
@@ -412,9 +401,7 @@
             const examplesContainer = document.getElementById('modal-examples');
             examplesContainer.innerHTML = '';
             topic.examples.forEach((example, index) => {
-                const iconColor = level.color.includes('green') ? '#27AE60' : 
-                                level.color.includes('blue') ? '#3498DB' : 
-                                level.color.includes('orange') ? '#F39C12' : '#E91E63';
+                const iconColor = level.color;
                 const div = document.createElement('div');
                 div.className = 'example-item';
                 div.innerHTML = `
@@ -434,13 +421,13 @@
             document.getElementById('topicModal').classList.add('show');
         }
 
-        // Close modal
+   
         function closeModal() {
             document.getElementById('topicModal').classList.remove('show');
             currentTopic = null;
         }
 
-        // Complete topic
+       
         function completeCurrentTopic() {
             if (currentTopic && !completedTopics.includes(currentTopic.id)) {
                 completedTopics.push(currentTopic.id);
@@ -452,7 +439,7 @@
             }
         }
 
-        // Update progress
+       
         function updateProgress() {
             const totalTopics = learningPath.reduce((acc, level) => acc + level.topics.length, 0);
             const percentage = Math.round((completedTopics.length / totalTopics) * 100);
@@ -462,14 +449,14 @@
             document.getElementById('progress-text').textContent = completedTopics.length + ' dari ' + totalTopics + ' topik selesai';
         }
 
-        // Close modal when clicking outside
+       
         document.getElementById('topicModal').onclick = function(event) {
             if (event.target === this) {
                 closeModal();
             }
         }
 
-        // Initialize
+       
         document.addEventListener('DOMContentLoaded', function() {
             loadData();
             renderLevelButtons();
