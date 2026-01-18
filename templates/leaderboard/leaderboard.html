@@ -1,0 +1,528 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard - Gameloka</title>
+    <link href="https://cdn.tailwindcss.com" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        .podium-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 24px;
+            margin-bottom: 48px;
+            padding: 24px 0;
+        }
+
+        .podium-item {
+            text-align: center;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        .podium-item.first {
+            order: 2;
+        }
+
+        .podium-item.second {
+            order: 1;
+        }
+
+        .podium-item.third {
+            order: 3;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .podium-badge {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .podium-badge.first {
+            background: linear-gradient(135deg, #FFC400 0%, #FFD700 100%);
+            color: white;
+        }
+
+        .podium-badge.second {
+            background: #d3d3d3;
+            color: #666;
+        }
+
+        .podium-badge.third {
+            background: #ff9a56;
+            color: white;
+        }
+
+        .podium-box {
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .podium-box.first {
+            background: linear-gradient(135deg, #FFC400 0%, #FFD700 100%);
+            width: 100px;
+            height: 140px;
+        }
+
+        .podium-box.second {
+            background: #d3d3d3;
+            width: 80px;
+            height: 120px;
+            color: #333;
+        }
+
+        .podium-box.third {
+            background: #ff9a56;
+            width: 80px;
+            height: 100px;
+        }
+
+        .ranking-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            border-radius: 16px;
+            transition: all 0.3s;
+            animation: fadeInUp 0.5s ease-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .ranking-item:nth-child(1) { animation-delay: 0.1s; }
+        .ranking-item:nth-child(2) { animation-delay: 0.15s; }
+        .ranking-item:nth-child(3) { animation-delay: 0.2s; }
+        .ranking-item:nth-child(4) { animation-delay: 0.25s; }
+        .ranking-item:nth-child(5) { animation-delay: 0.3s; }
+
+        .ranking-item.top3 {
+            background: linear-gradient(90deg, rgba(255, 157, 61, 0.1) 0%, transparent 100%);
+            border: 1px solid rgba(255, 157, 61, 0.2);
+        }
+
+        .ranking-item:not(.top3) {
+            background: rgba(0,0,0,0.02);
+        }
+
+        .ranking-item:hover {
+            background: rgba(255, 157, 61, 0.15);
+            transform: translateX(8px);
+        }
+
+        .rank-badge {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .rank-badge.top3 {
+            background: linear-gradient(135deg, #FF9D3D 0%, #FFC400 100%);
+            color: white;
+        }
+
+        .rank-badge:not(.top3) {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #FF9D3D;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            margin-bottom: -2px;
+        }
+
+        .tab.active {
+            color: #FF9D3D;
+            border-bottom-color: #FF9D3D;
+        }
+
+        .tab:hover {
+            color: #FF9D3D;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #999;
+            padding: 32px;
+            border-radius: 16px;
+            background: #f5f5f5;
+        }
+
+        @media (max-width: 768px) {
+            .podium-container {
+                gap: 12px;
+                margin-bottom: 32px;
+            }
+
+            .podium-box.first {
+                width: 70px;
+                height: 100px;
+                font-size: 14px;
+            }
+
+            .podium-box.second {
+                width: 60px;
+                height: 80px;
+                font-size: 12px;
+            }
+
+            .podium-box.third {
+                width: 60px;
+                height: 70px;
+                font-size: 12px;
+            }
+
+            .ranking-item {
+                padding: 12px;
+                font-size: 14px;
+            }
+
+            .tabs {
+                overflow-x: auto;
+            }
+
+            .tab {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body style="background: linear-gradient(135deg, #FF9D3D 0%, #FFC400 50%, #A4C639 100%); min-height: 100vh; padding: 40px 24px;">
+    <div style="max-width: 1000px; margin: 0 auto;">
+        <div style="text-align: center; margin-bottom: 48px; color: white;">
+            <div style="display: inline-block; background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); padding: 8px 16px; border-radius: 24px; margin-bottom: 16px;">
+                <span style="font-size: 14px; font-weight: 600;">🏆 Papan Peringkat</span>
+            </div>
+            <h1 style="font-size: 36px; font-weight: 700; margin-bottom: 12px;">Para Jawara Bahasa Betawi</h1>
+            <p style="font-size: 16px; color: rgba(255,255,255,0.9);">Lihat siapa yang menjadi yang terbaik dalam menguasai bahasa Betawi!</p>
+        </div>
+
+        <div style="background: white; border-radius: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); overflow: hidden;">
+            <div style="padding: 32px; border-bottom: 1px solid #f0f0f0;">
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;">
+                    <div style="display: flex; align-items: center; gap: 16px;">
+                        <div style="background: linear-gradient(135deg, #FF9D3D 0%, #FFC400 100%); width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                            <span style="font-size: 24px;">🏆</span>
+                        </div>
+                        <div>
+                            <h2 style="font-size: 20px; font-weight: 700; margin: 0; color: #333;">Papan Peringkat</h2>
+                            <p style="font-size: 13px; color: #999; margin: 4px 0 0 0;">Para jawara bahasa Betawi terbaik</p>
+                        </div>
+                    </div>
+                    <div class="tabs">
+                        <button class="tab active" onclick="switchTab(event, 'all-time')">
+                            📈 Semua Waktu
+                        </button>
+                        <button class="tab" onclick="switchTab(event, 'weekly')">
+                            📅 Minggu Ini
+                        </button>
+                        <button class="tab" onclick="switchTab(event, 'daily')">
+                            ⏰ Hari Ini
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div style="padding: 32px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-bottom: 40px;">
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-players">{{ stats.total_players }}</div>
+                        <div class="stat-label">Total Peserta</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="highest-score">{{ stats.highest_score|floatformat:0 }}</div>
+                        <div class="stat-label">Skor Tertinggi</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="average-score">{{ stats.average_score|floatformat:0 }}</div>
+                        <div class="stat-label">Rata-rata Skor</div>
+                    </div>
+                </div>
+
+                <div id="all-time" class="tab-content" style="display: block;">
+                    <div class="podium-container" id="podium-all-time"></div>
+                    <div style="display: flex; flex-direction: column; gap: 12px;" id="rankings-all-time"></div>
+                </div>
+
+                <div id="weekly" class="tab-content" style="display: none;">
+                    <div class="podium-container" id="podium-weekly"></div>
+                    <div style="display: flex; flex-direction: column; gap: 12px;" id="rankings-weekly"></div>
+                </div>
+
+                <div id="daily" class="tab-content" style="display: none;">
+                    <div class="podium-container" id="podium-daily"></div>
+                    <div style="display: flex; flex-direction: column; gap: 12px;" id="rankings-daily"></div>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 32px;">
+            <a href="/" style="color: white; text-decoration: none; font-weight: 600; display: inline-block; padding: 12px 32px; background: rgba(255,255,255,0.2); border-radius: 8px; transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                ← Kembali ke Beranda
+            </a>
+        </div>
+    </div>
+
+    <script id="all-time-data" type="application/json">
+{{ all_time_json|safe }}
+    </script>
+
+    <script id="weekly-data" type="application/json">
+{{ weekly_json|safe }}
+    </script>
+
+    <script id="daily-data" type="application/json">
+{{ daily_json|safe }}
+    </script>
+
+    <script>
+        var allTimeData = [];
+        var weeklyData = [];
+        var dailyData = [];
+        var currentPeriod = 'all-time';
+        
+        function loadDataFromScripts() {
+            var allTimeScript = document.getElementById('all-time-data');
+            if (allTimeScript && allTimeScript.textContent.trim()) {
+                try {
+                    allTimeData = JSON.parse(allTimeScript.textContent);
+                    console.log('Loaded all-time data:', allTimeData.length, 'entries');
+                } catch (e) {
+                    console.error('Error parsing all-time data:', e);
+                }
+            }
+            
+            var weeklyScript = document.getElementById('weekly-data');
+            if (weeklyScript && weeklyScript.textContent.trim()) {
+                try {
+                    weeklyData = JSON.parse(weeklyScript.textContent);
+                    console.log('Loaded weekly data:', weeklyData.length, 'entries');
+                } catch (e) {
+                    console.error('Error parsing weekly data:', e);
+                }
+            }
+            
+            var dailyScript = document.getElementById('daily-data');
+            if (dailyScript && dailyScript.textContent.trim()) {
+                try {
+                    dailyData = JSON.parse(dailyScript.textContent);
+                    console.log('Loaded daily data:', dailyData.length, 'entries');
+                } catch (e) {
+                    console.error('Error parsing daily data:', e);
+                }
+            }
+        }
+        
+        function getCurrentData() {
+            if (currentPeriod === 'weekly') return weeklyData;
+            if (currentPeriod === 'daily') return dailyData;
+            return allTimeData;
+        }
+        
+        function switchTab(event, period) {
+            document.querySelectorAll('.tab-content').forEach(function(el) {
+                el.style.display = 'none';
+            });
+            document.querySelectorAll('.tab').forEach(function(el) {
+                el.classList.remove('active');
+            });
+            
+            var tabElement = document.getElementById(period);
+            if (tabElement) {
+                tabElement.style.display = 'block';
+            }
+            
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+            
+            currentPeriod = period;
+            var data = getCurrentData();
+            
+            if (data && data.length > 0) {
+                renderPodium(data, 'podium-' + period);
+                renderRankings(data, 'rankings-' + period);
+            }
+        }
+
+        function renderPodium(data, containerId) {
+            if (data.length < 1) {
+                document.getElementById(containerId).innerHTML = '';
+                return;
+            }
+
+            var podiumData = [];
+            if (data.length >= 3) {
+                podiumData = [data[1], data[0], data[2]];
+            } else if (data.length === 2) {
+                podiumData = [data[1], data[0]];
+            } else {
+                podiumData = [data[0]];
+            }
+            
+            var positions = ['second', 'first', 'third'];
+            var badges = ['🥈', '👑', '🥉'];
+
+            var html = '';
+            for (var i = 0; i < podiumData.length; i++) {
+                var player = podiumData[i];
+                if (!player) continue;
+                var position = positions[i];
+                var badge = badges[i];
+                
+                html += '<div class="podium-item ' + position + '">';
+                html += '  <div style="font-size: 32px; margin-bottom: 8px;">' + (player.avatar || '👤') + '</div>';
+                html += '  <div style="font-weight: 600; color: #333; margin-bottom: 4px; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100px;">' + (player.name || 'Unknown') + '</div>';
+                html += '  <div class="podium-badge ' + position + '">' + badge + '</div>';
+                html += '  <div class="podium-box ' + position + '">' + (player.score || 0).toLocaleString() + '</div>';
+                html += '</div>';
+            }
+
+            document.getElementById(containerId).innerHTML = html;
+        }
+
+        function renderRankings(data, containerId) {
+            var html = '';
+            if (data.length === 0) {
+                html = '<div class="empty-state">Belum ada data leaderboard untuk periode ini</div>';
+            } else {
+                for (var i = 0; i < data.length; i++) {
+                    var player = data[i];
+                    var isTop3 = player.rank <= 3;
+                    var trendIcon = '–';
+                    var trendClass = 'trend-same';
+                    
+                    if (player.trend === 'up') {
+                        trendIcon = '↑';
+                        trendClass = 'trend-up';
+                    } else if (player.trend === 'down') {
+                        trendIcon = '↓';
+                        trendClass = 'trend-down';
+                    }
+
+                    var top3Class = isTop3 ? 'top3' : '';
+                    var badgeTop3Class = isTop3 ? 'top3' : '';
+                    
+                    html += '<div class="ranking-item ' + top3Class + '">';
+                    html += '  <div class="rank-badge ' + badgeTop3Class + '">' + player.rank + '</div>';
+                    html += '  <div style="font-size: 24px; flex-shrink: 0;">' + player.avatar + '</div>';
+                    html += '  <div style="flex: 1; min-width: 0;">';
+                    html += '    <div style="font-weight: 600; color: #333; font-size: 16px;">' + player.name + '</div>';
+                    html += '    <div style="font-size: 13px; color: #999; margin-top: 2px;">Level Mahir</div>';
+                    html += '  </div>';
+                    html += '  <div style="text-align: right; flex-shrink: 0; margin-left: 16px;">';
+                    html += '    <div style="font-weight: 700; font-size: 18px; color: #333;">' + player.score.toLocaleString() + '</div>';
+                    html += '    <div style="font-size: 12px; color: #999; margin-top: 2px;">poin</div>';
+                    html += '  </div>';
+                    html += '  <div class="trend-indicator ' + trendClass + '" style="margin-left: 12px;">' + trendIcon + '</div>';
+                    html += '</div>';
+                }
+            }
+
+            document.getElementById(containerId).innerHTML = html;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Page loaded, loading data...');
+            loadDataFromScripts();
+            
+            if (allTimeData && allTimeData.length > 0) {
+                console.log('Rendering all-time leaderboard...');
+                renderPodium(allTimeData, 'podium-all-time');
+                renderRankings(allTimeData, 'rankings-all-time');
+            } else {
+                console.log('No all-time data available');
+                var podium = document.getElementById('podium-all-time');
+                var rankings = document.getElementById('rankings-all-time');
+                if (rankings) {
+                    rankings.innerHTML = '<div class="empty-state">Belum ada data leaderboard</div>';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

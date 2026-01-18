@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.db.models import Sum, Max, Avg
+from django.db.models import Sum, Avg, Count, Max
 from datetime import timedelta
 from django.utils import timezone
 
@@ -28,7 +28,9 @@ class LeaderboardEntry(models.Model):
     @staticmethod
     def get_leaderboard_all_time(limit=None):
         """Dapatkan leaderboard semua waktu - aggregate total score per user"""
-        # Aggregate score per user (sum of all scores)
+        from django.db.models import Sum, Max
+        
+        
         user_scores = LeaderboardEntry.objects.values('user', 'user__username', 'user__first_name').annotate(
             total_score=Sum('score'),
             latest_entry=Max('created_at')
@@ -49,6 +51,8 @@ class LeaderboardEntry(models.Model):
     @staticmethod
     def get_leaderboard_weekly(limit=None):
         """Dapatkan leaderboard minggu ini - aggregate score dalam 7 hari terakhir"""
+        from django.db.models import Sum, Max
+        
         one_week_ago = timezone.now() - timedelta(days=7)
         
         user_scores = LeaderboardEntry.objects.filter(
@@ -73,6 +77,8 @@ class LeaderboardEntry(models.Model):
     @staticmethod
     def get_leaderboard_daily(limit=None):
         """Dapatkan leaderboard hari ini - aggregate score dalam 24 jam terakhir"""
+        from django.db.models import Sum, Max
+        
         today = timezone.now().date()
         today_start = timezone.make_aware(timezone.datetime.combine(today, timezone.datetime.min.time()))
         today_end = timezone.make_aware(timezone.datetime.combine(today, timezone.datetime.max.time()))
@@ -124,4 +130,3 @@ class LeaderboardEntry(models.Model):
             'highest_score': max_score or 0,
             'average_score': round(avg_score or 0, 2)
         }
-
