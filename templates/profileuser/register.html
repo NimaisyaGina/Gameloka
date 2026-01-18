@@ -1,0 +1,332 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Gameloka</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #FF9D3D 0%, #FFC400 50%, #A4C639 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+    </style>
+</head>
+<body>
+<div style="width: 100%; max-width: 1200px; display: flex; align-items: center; gap: 60px;">
+    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px;">
+        <div style="width: 280px; height: 280px; background: white; border-radius: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 40px rgba(0,0,0,0.15);">
+            <img src="{% static 'images/buaya.png' %}" alt="Gameloka Mascot" style="width: 100%; height: 100%; object-fit: contain; padding: 20px;">
+        </div>
+        
+        <div style="text-align: center;">
+            <h2 style="font-size: 28px; font-weight: 700; color: white; margin: 0 0 12px 0;">Bergabunglah!</h2>
+            <p style="font-size: 16px; color: rgba(255,255,255,0.95); margin: 0; font-weight: 500; line-height: 1.5;">Buat akun baru dan mulai petualangan Anda sekarang</p>
+        </div>
+    </div>
+
+    <div style="flex: 1; width: 100%; max-width: 420px;">
+        <div style="background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); overflow: hidden;">
+            <div style="background: linear-gradient(135deg, #FF9D3D 0%, #FFC400 100%); padding: 40px 32px; text-align: center;">
+                <h1 style="font-size: 28px; font-weight: 700; color: white; margin: 0; line-height: 1.2;">Buat Akun Baru</h1>
+                <p style="font-size: 14px; color: rgba(255,255,255,0.9); margin: 8px 0 0 0; font-weight: 500;">Bergabunglah dengan komunitas Gameloka</p>
+            </div>
+
+            <div style="padding: 40px 32px;">
+                <form id="registerForm" style="display: flex; flex-direction: column; gap: 20px;">
+                    {% csrf_token %}
+                    
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <label style="font-size: 14px; font-weight: 600; color: #333;">Nama Lengkap</label>
+                        <div style="position: relative; display: flex; align-items: center;">
+                            <span style="position: absolute; left: 12px; font-size: 18px; pointer-events: none;">👤</span>
+                            <input 
+                                type="text" 
+                                name="full_name" 
+                                id="fullName"
+                                placeholder="Nama lengkap Anda" 
+                                style="width: 100%; padding: 12px 12px 12px 44px; border: 2px solid #e8e8e8; border-radius: 8px; font-size: 14px; transition: all 0.3s; font-family: inherit;"
+                                required
+                            >
+                        </div>
+                        <p id="fullNameError" style="color: #e74c3c; font-size: 12px; margin: 0; display: none;"></p>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <label style="font-size: 14px; font-weight: 600; color: #333;">Email</label>
+                        <div style="position: relative; display: flex; align-items: center;">
+                            <span style="position: absolute; left: 12px; font-size: 18px; pointer-events: none;">📧</span>
+                            <input 
+                                type="email" 
+                                name="email" 
+                                id="registerEmail"
+                                placeholder="nama@email.com" 
+                                style="width: 100%; padding: 12px 12px 12px 44px; border: 2px solid #e8e8e8; border-radius: 8px; font-size: 14px; transition: all 0.3s; font-family: inherit;"
+                                required
+                            >
+                        </div>
+                        <p id="emailError" style="color: #e74c3c; font-size: 12px; margin: 0; display: none;"></p>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <label style="font-size: 14px; font-weight: 600; color: #333;">Password</label>
+                        <div style="position: relative; display: flex; align-items: center;">
+                            <span style="position: absolute; left: 12px; font-size: 18px; pointer-events: none;">🔒</span>
+                            <input 
+                                type="password" 
+                                name="password" 
+                                id="registerPassword"
+                                placeholder="Minimal 8 karakter" 
+                                style="width: 100%; padding: 12px 44px 12px 44px; border: 2px solid #e8e8e8; border-radius: 8px; font-size: 14px; transition: all 0.3s; font-family: inherit;"
+                                required
+                            >
+                            <button 
+                                type="button" 
+                                class="togglePasswordBtn"
+                                data-target="registerPassword"
+                                style="position: absolute; right: 12px; background: none; border: none; font-size: 18px; cursor: pointer; padding: 0; transition: transform 0.2s;"
+                                onmouseover="this.style.transform='scale(1.1)'"
+                                onmouseout="this.style.transform='scale(1)'"
+                            >
+                                👁️
+                            </button>
+                        </div>
+                        <p id="passwordError" style="color: #e74c3c; font-size: 12px; margin: 0; display: none;"></p>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <label style="font-size: 14px; font-weight: 600; color: #333;">Konfirmasi Password</label>
+                        <div style="position: relative; display: flex; align-items: center;">
+                            <span style="position: absolute; left: 12px; font-size: 18px; pointer-events: none;">🔒</span>
+                            <input 
+                                type="password" 
+                                name="confirm_password" 
+                                id="confirmPassword"
+                                placeholder="Ulangi password" 
+                                style="width: 100%; padding: 12px 44px 12px 44px; border: 2px solid #e8e8e8; border-radius: 8px; font-size: 14px; transition: all 0.3s; font-family: inherit;"
+                                required
+                            >
+                            <button 
+                                type="button" 
+                                class="togglePasswordBtn"
+                                data-target="confirmPassword"
+                                style="position: absolute; right: 12px; background: none; border: none; font-size: 18px; cursor: pointer; padding: 0; transition: transform 0.2s;"
+                                onmouseover="this.style.transform='scale(1.1)'"
+                                onmouseout="this.style.transform='scale(1)'"
+                            >
+                                👁️
+                            </button>
+                        </div>
+                        <p id="confirmPasswordError" style="color: #e74c3c; font-size: 12px; margin: 0; display: none;"></p>
+                    </div>
+
+                    <button 
+                        type="submit" 
+                        id="registerSubmit"
+                        style="width: 100%; margin-top: 24px; background: linear-gradient(135deg, #FF9D3D 0%, #FFC400 100%); color: white; font-weight: 700; padding: 14px 16px; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 12px rgba(255, 157, 61, 0.3);"
+                        onmouseover="this.style.boxShadow='0 6px 20px rgba(255, 157, 61, 0.4)'; this.style.transform='translateY(-2px)'"
+                        onmouseout="this.style.boxShadow='0 4px 12px rgba(255, 157, 61, 0.3)'; this.style.transform='translateY(0)'"
+                    >
+                        Daftar
+                    </button>
+                </form>
+
+                <div id="registerAlert" style="margin-top: 16px; padding: 12px 16px; border-radius: 8px; display: none; border-left: 4px solid transparent;" role="alert">
+                    <p id="alertMessage" style="font-size: 14px; margin: 0; font-weight: 500;"></p>
+                </div>
+
+    
+                <div style="margin-top: 24px; border-top: 1px solid #e8e8e8; padding-top: 16px; text-align: center;">
+                    <p style="margin: 0; font-size: 13px; color: #666;">
+                        Sudah punya akun? 
+                        <a href="{% url 'login' %}" style="color: #FF9D3D; text-decoration: none; font-weight: 700; transition: all 0.3s;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Masuk di sini</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    div[style*="background: white"] {
+        animation: fadeIn 0.3s ease-out;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+        box-sizing: border-box;
+    }
+
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="password"]:focus {
+        border-color: #FF9D3D !important;
+        box-shadow: 0 0 0 3px rgba(255, 157, 61, 0.1) !important;
+    }
+
+    button:disabled {
+        opacity: 0.6 !important;
+        cursor: not-allowed !important;
+    }
+
+    @media (max-width: 768px) {
+        div[style*="max-width: 1200px"] {
+            flex-direction: column !important;
+            gap: 30px !important;
+        }
+        
+        div[style*="flex: 1"] {
+            width: 100% !important;
+        }
+
+        div[style*="max-width: 420px"] {
+            max-width: 100% !important;
+        }
+    }
+</style>
+
+<script>
+    const togglePasswordBtns = document.querySelectorAll('.togglePasswordBtn');
+    
+    togglePasswordBtns.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('data-target');
+            const input = document.getElementById(targetId);
+            const type = input.type === 'password' ? 'text' : 'password';
+            input.type = type;
+            this.textContent = type === 'password' ? '👁️' : '👁️‍🗨️';
+        });
+    });
+
+    const registerForm = document.getElementById('registerForm');
+    const registerSubmit = document.getElementById('registerSubmit');
+    const registerAlert = document.getElementById('registerAlert');
+    const alertMessage = document.getElementById('alertMessage');
+
+    registerForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        document.querySelectorAll('[id$="Error"]').forEach(el => el.style.display = 'none');
+        registerAlert.style.display = 'none';
+        
+        const fullName = document.getElementById('fullName').value.trim();
+        const email = document.getElementById('registerEmail').value.trim();
+        const password = document.getElementById('registerPassword').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        
+
+        let hasError = false;
+        
+        if (!fullName) {
+            document.getElementById('fullNameError').textContent = 'Nama lengkap harus diisi';
+            document.getElementById('fullNameError').style.display = 'block';
+            hasError = true;
+        }
+        
+        if (!email) {
+            document.getElementById('emailError').textContent = 'Email harus diisi';
+            document.getElementById('emailError').style.display = 'block';
+            hasError = true;
+        }
+        
+        if (!password) {
+            document.getElementById('passwordError').textContent = 'Password harus diisi';
+            document.getElementById('passwordError').style.display = 'block';
+            hasError = true;
+        } else if (password.length < 8) {
+            document.getElementById('passwordError').textContent = 'Password minimal 8 karakter';
+            document.getElementById('passwordError').style.display = 'block';
+            hasError = true;
+        }
+        
+        if (password !== confirmPassword) {
+            document.getElementById('confirmPasswordError').textContent = 'Password tidak cocok';
+            document.getElementById('confirmPasswordError').style.display = 'block';
+            hasError = true;
+        }
+        
+        if (hasError) return;
+        
+        registerSubmit.disabled = true;
+        const originalText = registerSubmit.textContent;
+        registerSubmit.textContent = 'Sedang Mendaftar...';
+        
+        try {
+            const response = await fetch('{% url "api_register" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                },
+                body: JSON.stringify({
+                    full_name: fullName,
+                    email: email,
+                    password: password,
+                    confirm_password: confirmPassword
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                
+                registerAlert.style.backgroundColor = '#d4edda';
+                registerAlert.style.borderLeftColor = '#28a745';
+                alertMessage.textContent = '✓ ' + data.message;
+                alertMessage.style.color = '#155724';
+                registerAlert.style.display = 'block';
+                
+                setTimeout(() => {
+                    window.location.href = data.redirect;
+                }, 1000);
+            } else {
+               
+                registerAlert.style.backgroundColor = '#f8d7da';
+                registerAlert.style.borderLeftColor = '#f5222d';
+                alertMessage.textContent = '✗ ' + data.message;
+                alertMessage.style.color = '#721c24';
+                registerAlert.style.display = 'block';
+                
+              
+                registerSubmit.disabled = false;
+                registerSubmit.textContent = originalText;
+            }
+        } catch (error) {
+            registerAlert.style.backgroundColor = '#f8d7da';
+            registerAlert.style.borderLeftColor = '#f5222d';
+            alertMessage.textContent = '✗ Terjadi kesalahan: ' + error.message;
+            alertMessage.style.color = '#721c24';
+            registerAlert.style.display = 'block';
+            
+            
+            registerSubmit.disabled = false;
+            registerSubmit.textContent = originalText;
+        }
+    });
+</script>
+</body>
+</html>
