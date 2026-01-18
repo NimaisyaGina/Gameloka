@@ -4,7 +4,7 @@
 {% block title %}Arena Jawara - Gameloka{% endblock %}
 
 {% block content %}
-<div id="app" style="background: linear-gradient(135deg, #C0392B 0%, #F1C40F 100%); min-height: 100vh; padding: 24px; display: flex; align-items: center; justify-content: center;">
+<div id="app" data-user-id="{% if user.is_authenticated %}{{ user.id }}{% endif %}" style="background: linear-gradient(135deg, #C0392B 0%, #F1C40F 100%); min-height: 100vh; padding: 24px; display: flex; align-items: center; justify-content: center;">
     <div style="max-width: 600px; width: 100%;">
         
       
@@ -110,6 +110,9 @@
                 <div style="display: flex; gap: 12px; justify-content: center;">
                     <button onclick="startGame()" style="background: linear-gradient(135deg, #C0392B 0%, #F1C40F 100%); color: white; border: none; padding: 14px 32px; border-radius: 25px; font-weight: 700; font-size: 16px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
                         🔄 Coba Lagi
+                    </button>
+                    <button onclick="goToLeaderboard()" style="background: linear-gradient(135deg, #F1C40F 0%, #C0392B 100%); color: white; border: none; padding: 14px 32px; border-radius: 25px; font-weight: 700; font-size: 16px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                        🏆 Lihat Leaderboard
                     </button>
                     <button onclick="goToHome()" style="background: white; color: #C0392B; border: 2px solid #C0392B; padding: 14px 32px; border-radius: 25px; font-weight: 700; font-size: 16px; cursor: pointer; transition: all 0.3s;">
                         Kembali
@@ -318,6 +321,43 @@ function finishGame() {
 }
 
 function saveToLeaderboard() {
+    // Simpan ke backend jika user sudah login
+    const appElement = document.getElementById('app');
+    const userId = appElement?.dataset.userId;
+    
+    if (userId) {
+        // Get CSRF token dari meta tag atau cookie
+        let csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+        
+        if (!csrfToken) {
+            csrfToken = getCookie('csrftoken') || '';
+        }
+        
+        fetch('/arena/api/save-score/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({
+                score: score,
+                user_id: userId
+            })
+        }).then(response => response.json())
+          .then(data => {
+              console.log('Score saved to leaderboard:', data);
+              if (data.status === 'success') {
+                  console.log('✅ Score berhasil disimpan!');
+              } else if (data.status === 'not_authenticated') {
+                  console.log('⚠️ Silakan login untuk menyimpan skor');
+              }
+          })
+          .catch(error => console.error('Error saving score:', error));
+    } else {
+        console.log('User not authenticated, score not saved to leaderboard');
+    }
+    
+    // Simpan ke localStorage juga (untuk akses offline)
     const leaderboard = JSON.parse(localStorage.getItem('gameloka-leaderboard') || '[]');
     const newEntry = {
         name: 'Jawara ' + Math.floor(Math.random() * 10000),
@@ -329,6 +369,22 @@ function saveToLeaderboard() {
     localStorage.setItem('gameloka-leaderboard', JSON.stringify(leaderboard));
 }
 
+// Utility function untuk ambil CSRF token dari cookie
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
 function showState(state) {
     document.getElementById('idle-state').style.display = state === 'idle' ? 'block' : 'none';
     document.getElementById('playing-state').style.display = state === 'playing' ? 'block' : 'none';
@@ -337,6 +393,10 @@ function showState(state) {
 
 function goToHome() {
     window.location.href = '/';
+}
+
+function goToLeaderboard() {
+    window.location.href = '/leaderboard/';
 }
 
 

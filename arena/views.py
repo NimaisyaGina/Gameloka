@@ -2,7 +2,9 @@ from django.shortcuts import render
 from django.views.generic import TemplateView
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_exempt
 from django.utils.safestring import mark_safe
+from django.contrib.auth.models import User
 import json
 import random
 from datetime import datetime
@@ -86,19 +88,56 @@ class ArenaJawaraView(TemplateView):
 
 
 @require_http_methods(["POST"])
+@csrf_exempt
 def save_score_api(request):
     """API endpoint untuk menyimpan score ke leaderboard"""
     try:
         data = json.loads(request.body)
         score = data.get('score', 0)
+        user_id = data.get('user_id')
         
-        # Di sini bisa disimpan ke database
-        # Untuk sekarang, return success response
+        # Jika user_id dikirim dan user authenticated
+        if user_id and request.user.is_authenticated:
+            from leaderboard.models import LeaderboardEntry
+            entry = LeaderboardEntry.objects.create(
+                user=request.user,
+                score=int(score),
+                game_type='Arena Jawara'
+            )
+            
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Score saved to leaderboard',
+                'score': score,
+                'leaderboard_entry_id': entry.id
+            })
+        elif request.user.is_authenticated:
+            # User authenticated tapi tidak ada user_id di request
+            from leaderboard.models import LeaderboardEntry
+            entry = LeaderboardEntry.objects.create(
+                user=request.user,
+                score=int(score),
+                game_type='Arena Jawara'
+            )
+            
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Score saved to leaderboard',
+                'score': score,
+                'leaderboard_entry_id': entry.id
+            })
+        else:
+            # User belum login
+            return JsonResponse({
+                'status': 'not_authenticated',
+                'message': 'Login untuk menyimpan skor ke leaderboard',
+                'score': score
+            }, status=401)
+    except json.JSONDecodeError:
         return JsonResponse({
-            'status': 'success',
-            'message': 'Score saved successfully',
-            'score': score
-        })
+            'status': 'error',
+            'message': 'Invalid JSON format'
+        }, status=400)
     except Exception as e:
         return JsonResponse({
             'status': 'error',

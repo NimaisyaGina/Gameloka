@@ -1,0 +1,467 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kompas Belajar - Gameloka</title>
+    <link href="https://cdn.tailwindcss.com" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        .gradient-dasar {
+            background: linear-gradient(135deg, #27AE60 0%, #2ECC71 100%);
+        }
+
+        .gradient-menengah {
+            background: linear-gradient(135deg, #3498DB 0%, #2980B9 100%);
+        }
+
+        .gradient-lanjut {
+            background: linear-gradient(135deg, #F39C12 0%, #E67E22 100%);
+        }
+
+        .gradient-budaya {
+            background: linear-gradient(135deg, #E91E63 0%, #C2185B 100%);
+        }
+
+        .gradient-primary {
+            background: linear-gradient(135deg, #27AE60 0%, #F1C40F 100%);
+        }
+
+        .topic-card {
+            transition: all 0.3s ease;
+            border-radius: 1rem;
+            cursor: pointer;
+        }
+
+        .topic-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+        .topic-card.completed {
+            background: rgba(39, 174, 96, 0.1);
+            border: 2px solid #27AE60;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 50;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1.5rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background-color: #E0E0E0;
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #27AE60 0%, #F1C40F 100%);
+            transition: width 0.5s ease;
+        }
+
+        .level-button {
+            transition: all 0.3s ease;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: #666;
+            background-color: #F5F5F5;
+        }
+
+        .level-button.active {
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .level-button:hover:not(.active) {
+            background-color: #EFEFEF;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                position: static;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 1.5rem;
+            }
+
+            [style*="display: grid"][style*="grid-template-columns: 1fr 2fr"] {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
+        .example-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            background-color: #F5F5F5;
+            border-radius: 0.75rem;
+            align-items: flex-start;
+        }
+
+        .example-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body style="background: linear-gradient(135deg, #27AE60 0%, #F1C40F 50%, #A4C639 100%); min-height: 100vh;">
+    <div style="max-width: 1280px; margin: 0 auto; padding: 2rem 1rem;">
+        
+        <div style="margin-bottom: 2rem;">
+            <a href="/" style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.2); color: white; padding: 0.75rem 1.5rem; border-radius: 25px; text-decoration: none; font-weight: 600; transition: all 0.3s; border: 2px solid rgba(255,255,255,0.3);" onmouseover="this.style.background='rgba(255,255,255,0.3)'; this.style.borderColor='rgba(255,255,255,0.5)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'; this.style.borderColor='rgba(255,255,255,0.3)'">
+                <span style="font-size: 18px;">←</span>
+                <span>Kembali ke Beranda</span>
+            </a>
+        </div>
+
+      
+        <div style="text-align: center; margin-bottom: 3rem; color: white;">
+            <div style="display: inline-block; background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); padding: 0.5rem 1rem; border-radius: 9999px; margin-bottom: 1rem; font-size: 14px; font-weight: 600;">
+                🧭 Jalur Pembelajaran
+            </div>
+            <h1 style="font-size: 2.25rem; font-weight: 700; margin-bottom: 0.75rem;">Kompas Belajar</h1>
+            <p style="font-size: 1rem; color: rgba(255,255,255,0.9);">Panduan lengkap belajar bahasa Betawi dari tingkat dasar hingga mahir</p>
+        </div>
+
+    
+        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; margin-bottom: 2rem;">
+            
+            <div class="sidebar" style="position: sticky; top: 2rem; height: fit-content;">
+                <div style="background: white; border-radius: 1.5rem; box-shadow: 0 20px 60px rgba(0,0,0,0.2); padding: 1.5rem;">
+                 
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+                        <div class="gradient-primary" style="width: 48px; height: 48px; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center;">
+                            <span style="font-size: 24px;">🧭</span>
+                        </div>
+                        <div>
+                            <h3 style="font-size: 16px; font-weight: 700; color: #333; margin-bottom: 0.25rem;">Kompas Belajar</h3>
+                            <p style="font-size: 12px; color: #999;">Panduan lengkap bahasa Betawi</p>
+                        </div>
+                    </div>
+
+                   
+                    <div style="background-color: #FAF3E0; border-radius: 1rem; padding: 1rem; margin-bottom: 1.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                            <span style="font-size: 14px; font-weight: 600; color: #27AE60;">Progress Belajar</span>
+                            <span style="font-size: 14px; font-weight: 700; color: #27AE60;" id="progress-percent">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-fill" style="width: 0%;"></div>
+                        </div>
+                        <p style="margin-top: 0.75rem; font-size: 12px; color: #666;" id="progress-text">0 dari 0 topik selesai</p>
+                    </div>
+
+                   
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;" id="level-buttons">
+                       
+                    </div>
+                </div>
+            </div>
+
+           
+            <div style="background: white; border-radius: 1.5rem; box-shadow: 0 20px 60px rgba(0,0,0,0.2); padding: 1.5rem;">
+                <h3 style="font-size: 20px; font-weight: 700; color: #333; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="font-size: 20px;">📚</span>
+                    <span id="level-title">Level</span>
+                </h3>
+
+               
+                <div style="display: grid; grid-template-columns: 1fr; gap: 1rem;" id="topics-container">
+                   
+                </div>
+            </div>
+        </div>
+    </div>
+
+ 
+    <div class="modal" id="topicModal">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
+                <div>
+                    <h2 style="font-size: 20px; font-weight: 700; color: #333; margin-bottom: 0.5rem;" id="modal-title">Judul Topik</h2>
+                    <div id="modal-badge" style="display: none; color: #27AE60; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                        <span>✓</span> Sudah selesai
+                    </div>
+                </div>
+                <button onclick="closeModal()" style="background: none; border: none; font-size: 28px; cursor: pointer; color: #666; padding: 0;">×</button>
+            </div>
+
+            <div style="background-color: #FAF3E0; border-radius: 1rem; padding: 1rem; margin-bottom: 1.5rem;">
+                <p style="color: #333; line-height: 1.6;" id="modal-content">Konten topik</p>
+            </div>
+
+            <h3 style="font-size: 16px; font-weight: 700; color: #333; margin-bottom: 1rem;">Contoh:</h3>
+            <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.5rem;" id="modal-examples">
+             
+            </div>
+
+            <div style="display: flex; gap: 1rem;">
+                <button id="completeBtn" onclick="completeCurrentTopic()" style="flex: 1; padding: 0.75rem 1.5rem; border-radius: 9999px; border: none; color: white; font-weight: 700; cursor: pointer; transition: all 0.3s;" class="gradient-primary">
+                    Tandai Selesai
+                </button>
+                <button onclick="closeModal()" style="flex: 1; padding: 0.75rem 1.5rem; border-radius: 9999px; border: none; background-color: #E0E0E0; color: #333; font-weight: 700; cursor: pointer; transition: all 0.3s;">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script id="learning-data" type="application/json">
+{{ learning_path|safe }}
+    </script>
+
+    <script>
+        let learningPath = [];
+        let completedTopics = [];
+        let currentLevel = 'dasar';
+        let currentTopic = null;
+
+      
+        const colorMap = {
+            '#27AE60': 'dasar',
+            '#3498DB': 'menengah',
+            '#F39C12': 'lanjut',
+            '#E91E63': 'budaya'
+        };
+
+        const gradientMap = {
+            '#27AE60': 'gradient-dasar',
+            '#3498DB': 'gradient-menengah',
+            '#F39C12': 'gradient-lanjut',
+            '#E91E63': 'gradient-budaya'
+        };
+
+     
+        function loadData() {
+            const dataScript = document.getElementById('learning-data');
+            if (dataScript && dataScript.textContent.trim()) {
+                try {
+                    learningPath = JSON.parse(dataScript.textContent);
+                    console.log('Learning path loaded:', learningPath);
+                } catch (e) {
+                    console.error('Error parsing learning data:', e);
+                }
+            }
+
+            const saved = localStorage.getItem('gameloka-completed-topics');
+            if (saved) {
+                completedTopics = JSON.parse(saved);
+            }
+        }
+
+   
+        function renderLevelButtons() {
+            const container = document.getElementById('level-buttons');
+            container.innerHTML = '';
+
+            learningPath.forEach((level, index) => {
+                const completed = level.topics.filter(t => completedTopics.includes(t.id)).length;
+                const button = document.createElement('button');
+                button.className = 'level-button' + (currentLevel === level.id ? ' active' : '');
+                
+                const gradientClass = gradientMap[level.color];
+
+                if (currentLevel === level.id) {
+                    button.classList.add(gradientClass);
+                }
+
+                button.innerHTML = `
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                            <span style="font-size: 18px;">📖</span>
+                            <span>${level.name}</span>
+                        </div>
+                        <span style="font-size: 14px; ${currentLevel === level.id ? 'color: rgba(255,255,255,0.8)' : 'color: #999'}">${completed}/${level.topics.length}</span>
+                    </div>
+                `;
+
+                button.onclick = () => selectLevel(level.id);
+                container.appendChild(button);
+            });
+
+            updateProgress();
+        }
+
+    
+        function selectLevel(levelId) {
+            currentLevel = levelId;
+            renderLevelButtons();
+            renderTopics();
+        }
+
+       
+        function renderTopics() {
+            const level = learningPath.find(l => l.id === currentLevel);
+            if (!level) return;
+
+            document.getElementById('level-title').textContent = 'Level ' + level.name;
+
+            const container = document.getElementById('topics-container');
+            container.innerHTML = '';
+
+            level.topics.forEach((topic, index) => {
+                const isCompleted = completedTopics.includes(topic.id);
+                const card = document.createElement('div');
+                card.className = 'topic-card' + (isCompleted ? ' completed' : '');
+                
+                const iconColor = level.color;
+
+                card.innerHTML = `
+                    <div style="display: flex; align-items: flex-start; gap: 1rem; padding: 1.25rem; border: 2px solid ${isCompleted ? '#27AE60' : '#E0E0E0'}; border-radius: 1rem; background-color: ${isCompleted ? 'rgba(39, 174, 96, 0.1)' : '#FAFAFA'};">
+                        <div style="width: 48px; height: 48px; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0; background-color: ${iconColor};">
+                            ${isCompleted ? '✓' : '📖'}
+                        </div>
+                        <div style="flex: 1;">
+                            <h4 style="font-size: 16px; font-weight: 700; color: #333; margin-bottom: 0.5rem;">${topic.title}</h4>
+                            <p style="font-size: 14px; color: #666; line-height: 1.5;">${topic.content}</p>
+                        </div>
+                        ${!isCompleted ? `<span style="color: #999; flex-shrink: 0;">→</span>` : `<span style="background-color: rgba(39, 174, 96, 0.2); color: #27AE60; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 12px; font-weight: 600; white-space: nowrap; flex-shrink: 0;">Selesai</span>`}
+                    </div>
+                `;
+
+                card.onclick = () => openModal(topic);
+                container.appendChild(card);
+            });
+        }
+
+       
+        function openModal(topic) {
+            currentTopic = topic;
+            const level = learningPath.find(l => l.topics.some(t => t.id === topic.id));
+            const isCompleted = completedTopics.includes(topic.id);
+
+            document.getElementById('modal-title').textContent = topic.title;
+            document.getElementById('modal-content').textContent = topic.content;
+            document.getElementById('modal-badge').style.display = isCompleted ? 'flex' : 'none';
+
+            const examplesContainer = document.getElementById('modal-examples');
+            examplesContainer.innerHTML = '';
+            topic.examples.forEach((example, index) => {
+                const iconColor = level.color;
+                const div = document.createElement('div');
+                div.className = 'example-item';
+                div.innerHTML = `
+                    <div class="example-number" style="background-color: ${iconColor};">${index + 1}</div>
+                    <span>${example}</span>
+                `;
+                examplesContainer.appendChild(div);
+            });
+
+            const completeBtn = document.getElementById('completeBtn');
+            if (isCompleted) {
+                completeBtn.style.display = 'none';
+            } else {
+                completeBtn.style.display = 'block';
+            }
+
+            document.getElementById('topicModal').classList.add('show');
+        }
+
+   
+        function closeModal() {
+            document.getElementById('topicModal').classList.remove('show');
+            currentTopic = null;
+        }
+
+       
+        function completeCurrentTopic() {
+            if (currentTopic && !completedTopics.includes(currentTopic.id)) {
+                completedTopics.push(currentTopic.id);
+                localStorage.setItem('gameloka-completed-topics', JSON.stringify(completedTopics));
+                closeModal();
+                renderTopics();
+                renderLevelButtons();
+                updateProgress();
+            }
+        }
+
+       
+        function updateProgress() {
+            const totalTopics = learningPath.reduce((acc, level) => acc + level.topics.length, 0);
+            const percentage = Math.round((completedTopics.length / totalTopics) * 100);
+
+            document.getElementById('progress-fill').style.width = percentage + '%';
+            document.getElementById('progress-percent').textContent = percentage + '%';
+            document.getElementById('progress-text').textContent = completedTopics.length + ' dari ' + totalTopics + ' topik selesai';
+        }
+
+       
+        document.getElementById('topicModal').onclick = function(event) {
+            if (event.target === this) {
+                closeModal();
+            }
+        }
+
+       
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            renderLevelButtons();
+            renderTopics();
+        });
+    </script>
+</body>
+</html>
