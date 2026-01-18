@@ -4,10 +4,10 @@
 {% block title %}Gameloka - Gamifikasi Bahasa Betawi{% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
+
 <section style="background: linear-gradient(135deg, #FF9D3D 0%, #FFC400 50%, #A4C639 100%); padding: 48px 24px 0 24px; position: relative; overflow: hidden;">
     <div style="max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center;">
-        <!-- Left Column: Text Content -->
+     
         <div style="color: white; z-index: 2;">
             <h1 style="font-size: 48px; font-weight: 800; margin-bottom: 16px; line-height: 1.2;">
                 Selamat Datang di Gameloka
@@ -16,17 +16,17 @@
                 Platform pelestarian Bahasa Betawi berbasis gamifikasi. Belajar bahasa dengan cara yang menyenangkan!
             </p>
             
-            <!-- CTA Buttons -->
+         
             <div style="display: flex; gap: 16px; margin-bottom: 48px;">
-                <button style="background: white; color: #FF9D3D; padding: 12px 32px; border: none; border-radius: 25px; font-weight: 700; font-size: 16px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-                    Mulai Belajar 
-                </button>
+                <a href="{% if user.is_authenticated %}/kompas/{% else %}{% url 'login' %}{% endif %}" style="background: white; color: #FF9D3D; padding: 12px 32px; border: none; border-radius: 25px; font-weight: 700; font-size: 16px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-decoration: none; display: inline-block;">
+                    {% if user.is_authenticated %}Mulai Belajar{% else %}Daftar & Belajar{% endif %} 
+                </a>
                 <button style="background: transparent; color: white; padding: 12px 32px; border: 2px solid white; border-radius: 25px; font-weight: 700; font-size: 16px; cursor: pointer; transition: all 0.3s;">
                     Lihat Demo
                 </button>
             </div>
 
-            <!-- Stats -->
+      
             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;">
                 <div>
                     <div style="font-size: 28px; font-weight: 800; margin-bottom: 4px;">500+</div>
@@ -43,7 +43,7 @@
             </div>
         </div>
 
-        <!-- Right Column: Mascot Image -->
+      
         <div style="display: flex; align-items: center; justify-content: center;">
             <div style="background: white; width: 280px; height: 280px; border-radius: 32px; padding: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 25px 70px rgba(0,0,0,0.12);">
                 <img src="{% static 'images/buaya.png' %}" alt="Gameloka Mascot" style="width: 100%; height: 100%; object-fit: contain;">
@@ -52,13 +52,13 @@
     </div>
 </section>
 
-<!-- Features Section -->
+
 <section style="padding: 0 24px 48px 24px; background: linear-gradient(135deg, #FF9D3D 0%, #FFC400 50%, #A4C639 100%); margin: 0;">
     <div style="max-width: 1280px; margin: 0 auto; padding-top: 48px;">
-        <!-- Feature Grid: 4 Columns with White Cards -->
+        
         <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
             {% for feature in features %}
-            <div style="background: white; border-radius: 24px; padding: 28px 20px; text-align: center; transition: transform 0.3s, box-shadow 0.3s; cursor: pointer; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08); border: 2px solid #f5f5f5;" onmouseover="this.style.transform='translateY(-6px)'; this.style.boxShadow='0 8px 24px rgba(0, 0, 0, 0.12)'; this.style.borderColor='#FF9D3D';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 12px rgba(0, 0, 0, 0.08)'; this.style.borderColor='#f5f5f5';">
+            <div data-feature-id="{{ feature.id }}" style="background: white; border-radius: 24px; padding: 28px 20px; text-align: center; transition: transform 0.3s, box-shadow 0.3s; cursor: pointer; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08); border: 2px solid #f5f5f5;" onmouseover="this.style.transform='translateY(-6px)'; this.style.boxShadow='0 8px 24px rgba(0, 0, 0, 0.12)'; this.style.borderColor='#FF9D3D';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 12px rgba(0, 0, 0, 0.08)'; this.style.borderColor='#f5f5f5';">
                 <div style="font-size: 56px; margin-bottom: 12px;">
                     {{ feature.emoji }}
                 </div>
@@ -71,10 +71,11 @@
             </div>
             {% endfor %}
         </div>
+        </div>
     </div>
 </section>
 
-<!-- Call to Action Section -->
+
 <section style="background: linear-gradient(135deg, #FF9D3D 0%, #FFC400 100%); padding: 64px 24px; text-align: center;">
     <div style="max-width: 800px; margin: 0 auto; color: white;">
         <h2 style="font-size: 36px; font-weight: 800; margin-bottom: 16px;">
@@ -90,19 +91,35 @@
 </section>
 
 <script>
-// Mobile menu toggle
+
 document.getElementById('mobile-menu-btn').addEventListener('click', function() {
     const nav = document.querySelector('nav');
-    // Add mobile menu functionality here
+   
 });
 
-// Smooth scroll for anchor links
+
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function(e) {
         e.preventDefault();
         const target = document.querySelector(this.getAttribute('href'));
         if (target) {
             target.scrollIntoView({ behavior: 'smooth' });
+        }
+    });
+});
+
+
+document.querySelectorAll('[data-feature-id]').forEach(card => {
+    card.addEventListener('click', function(e) {
+        const featureId = this.getAttribute('data-feature-id');
+        const paths = {
+            'arena': '/arena/',
+            'kompas': '/kompas/',
+            'leaderboard': '/leaderboard/',
+            'cerita': '/cerita/'
+        };
+        if (paths[featureId]) {
+            window.location.href = paths[featureId];
         }
     });
 });

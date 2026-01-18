@@ -9,7 +9,7 @@ LEARNING_PATH = [
     {
         'id': 'dasar',
         'name': 'Dasar',
-        'color': 'from-green-400 to-green-600',
+        'color': '#27AE60',  
         'topics': [
             {
                 'id': 'dasar-1',
@@ -34,7 +34,7 @@ LEARNING_PATH = [
     {
         'id': 'menengah',
         'name': 'Menengah',
-        'color': 'from-blue-400 to-blue-600',
+        'color': '#3498DB',  
         'topics': [
             {
                 'id': 'menengah-1',
@@ -59,7 +59,7 @@ LEARNING_PATH = [
     {
         'id': 'lanjut',
         'name': 'Lanjut',
-        'color': 'from-orange-400 to-orange-600',
+        'color': '#F39C12', 
         'topics': [
             {
                 'id': 'lanjut-1',
@@ -84,7 +84,7 @@ LEARNING_PATH = [
     {
         'id': 'budaya',
         'name': 'Budaya',
-        'color': 'from-pink-400 to-pink-600',
+        'color': '#E91E63',  
         'topics': [
             {
                 'id': 'budaya-1',
