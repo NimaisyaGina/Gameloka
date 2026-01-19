@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ story.title }} - Gameloka{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/narrative_game_enhanced.css' %}">
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    background: #f5f5f5;
+  }
+  
+  #gameContainer {
+    width: 100%;
+    min-height: 100vh;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="gameContainer" style="width: 100%; min-height: 100vh;"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/narrative_game_engine.js' %}"></script>
+<script>
+    // Pass story ID to JavaScript engine
+    window.CURRENT_STORY_ID = '{{ story.id }}';
+    console.log('[Template] Story loaded:', window.CURRENT_STORY_ID);
+</script>
+{% endblock %}
