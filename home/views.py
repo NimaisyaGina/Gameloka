@@ -50,6 +50,14 @@ class HomePageView(TemplateView):
                 'emoji': '💬',
                 'color': '#C0392B',
                 'icon': 'message-square'
+            },
+            {
+                'id': 'peta',
+                'title': 'Peta Budaya',
+                'description': 'Jelajahi lokasi budaya Betawi & mainkan cerita interaktif',
+                'emoji': '🌍',
+                'color': '#27AE60',
+                'icon': 'map'
             }
         ]
         

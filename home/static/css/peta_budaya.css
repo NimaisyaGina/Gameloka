@@ -1,0 +1,776 @@
+/* Peta Budaya Betawi - Exact Design Match */
+
+:root {
+    --teal: #17a2b8;
+    --teal-dark: #0d7fa0;
+    --green: #27AE60;
+    --green-light: #D5F4E6;
+    --blue: #2980B9;
+    --blue-light: #E3F2FD;
+    --orange: #F39C12;
+    --red: #C0392B;
+    --yellow: #F1C40F;
+    --text: #2C3E50;
+    --text-light: #7F8C8D;
+    --bg-light: #F5F7FA;
+    --border: #ECF0F1;
+    --white: #FFFFFF;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    background: linear-gradient(135deg, #27AE60 0%, #2980B9 100%);
+    min-height: 100vh;
+}
+
+/* ===== MAIN CONTAINER ===== */
+.peta-container {
+    min-height: 100vh;
+    background: transparent;
+}
+
+/* ===== HEADER ===== */
+.peta-header {
+    background: linear-gradient(90deg, #17a2b8 0%, #27AE60 100%);
+    padding: 24px 40px;
+    margin: 24px 24px 24px 24px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.header-icon {
+    font-size: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.25);
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    color: white;
+}
+
+.header-text {
+    flex: 1;
+}
+
+.header-text h1 {
+    color: white;
+    font-size: 1.6em;
+    margin: 0;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.header-text p {
+    color: rgba(255, 255, 255, 0.9);
+    margin: 6px 0 0;
+    font-size: 0.9em;
+    font-weight: 400;
+}
+
+/* ===== MAIN LAYOUT ===== */
+.peta-main {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+    padding: 0 24px 24px 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* ===== MAP SECTION ===== */
+.map-section {
+    display: flex;
+    flex-direction: column;
+}
+
+.map-container {
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+}
+
+.map-canvas {
+    position: relative;
+    width: 100%;
+    height: 480px;
+    background: linear-gradient(135deg, #e8f5e9 0%, #e3f2fd 100%);
+    overflow: hidden;
+}
+
+.map-canvas::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: 
+        radial-gradient(circle at 20% 30%, rgba(39, 174, 96, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(41, 128, 185, 0.08) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Map Title */
+.map-title {
+    position: absolute;
+    top: 24px;
+    left: 24px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 12px 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+.map-title h3 {
+    margin: 0;
+    color: #27AE60;
+    font-size: 1em;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+}
+
+/* Map Decorative */
+.map-decorative {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--green) 0%, transparent 70%);
+    opacity: 0.06;
+    left: 50%;
+    top: 55%;
+    transform: translate(-50%, -50%);
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Map Instructions */
+.map-instructions {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 12px 24px;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+.map-instructions p {
+    margin: 0;
+    color: var(--red);
+    font-weight: 600;
+    font-size: 0.85em;
+}
+
+/* Markers Container */
+#markers-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    top: 0;
+    left: 0;
+    pointer-events: auto;
+}
+
+/* ===== MARKERS ===== */
+.map-marker {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s ease;
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+}
+
+/* Hovered marker state: z-index 15 */
+.map-marker.hovered {
+    z-index: 15;
+}
+
+/* Selected marker state: z-index 20 */
+.map-marker.selected {
+    z-index: 20;
+}
+
+.marker-pulse {
+    position: absolute;
+    width: 48px;
+    height: 48px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+}
+
+.marker-pulse.active {
+    background: var(--red);
+    animation: pulse 2s infinite;
+}
+
+.marker-pulse.default {
+    background: var(--green);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.6;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(1.8);
+    }
+}
+
+.marker-icon {
+    position: relative;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: white;
+    background: var(--green);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    font-size: 20px;
+    transition: all 0.3s ease;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.map-marker.selected .marker-icon {
+    background: var(--orange);
+    transform: scale(1.12);
+    box-shadow: 0 3px 10px rgba(243, 156, 18, 0.35);
+}
+
+.map-marker:hover .marker-icon {
+    transform: scale(1.08);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+}
+
+.marker-tooltip {
+    position: absolute;
+    top: -48px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    border-radius: 6px;
+    padding: 6px 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    opacity: 1;
+    visibility: visible;
+    transition: all 0.2s ease;
+    pointer-events: none;
+    z-index: 20;
+    white-space: nowrap;
+}
+
+.marker-tooltip::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 4px solid white;
+}
+
+.map-marker:hover .marker-tooltip,
+.map-marker.selected .marker-tooltip {
+    opacity: 1;
+    visibility: visible;
+}
+
+.marker-tooltip-name {
+    color: var(--red);
+    font-weight: 700;
+    font-size: 0.8em;
+    margin: 0;
+    display: block;
+}
+
+.marker-tooltip-category {
+    color: var(--text-light);
+    font-size: 0.7em;
+    margin: 3px 0 0;
+    display: block;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar-section {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    height: fit-content;
+}
+
+/* Location Panel */
+.location-panel {
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.location-panel.hidden {
+    display: none;
+}
+
+.panel-header {
+    padding: 24px;
+    border-bottom: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: transparent;
+}
+
+.panel-header h2 {
+    color: var(--red);
+    font-size: 1.15em;
+    margin: 0;
+    font-weight: 700;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: var(--text-light);
+    cursor: pointer;
+    padding: 0;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.close-btn:hover {
+    background: var(--border);
+    color: var(--text);
+}
+
+.panel-content {
+    padding: 0 24px 24px 24px;
+}
+
+.location-category-tag {
+    display: inline-block;
+    background: var(--green);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 16px;
+    font-size: 0.75em;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.location-description {
+    background: #FAF3E0;
+    border-radius: 8px;
+    padding: 14px;
+    color: var(--text);
+    margin-bottom: 16px;
+    line-height: 1.5;
+    font-size: 0.9em;
+}
+
+.btn-story {
+    width: 100%;
+    padding: 14px 20px;
+    background: linear-gradient(135deg, #C0392B 0%, #F1C40F 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 16px;
+}
+
+.btn-story:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(192, 57, 43, 0.4);
+}
+
+.info-hint {
+    background: var(--blue-light);
+    border-left: 3px solid var(--blue);
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 0.8em;
+    color: #1565C0;
+}
+
+/* Default Panel */
+.default-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.default-panel.hidden {
+    display: none;
+}
+
+/* Sidebar Card */
+.sidebar-card {
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    padding: 24px;
+}
+
+.sidebar-card h3 {
+    color: #27AE60;
+    margin: 0 0 16px;
+    font-size: 1.1em;
+    font-weight: 700;
+}
+
+.sidebar-hint {
+    color: var(--text-light);
+    font-size: 0.8em;
+    margin: 0 0 12px;
+}
+
+/* ===== LOCATIONS LIST ===== */
+.locations-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.location-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: #FDF6E3;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.location-item:hover {
+    background: #F5E6D3;
+    transform: translateX(2px);
+}
+
+.location-item.active {
+    background: #E8F5E9;
+    border-color: var(--green);
+}
+
+.location-item-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    background: var(--green);
+    flex-shrink: 0;
+    font-size: 16px;
+}
+
+.location-item-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.location-item-name {
+    color: var(--red);
+    font-weight: 700;
+    font-size: 0.85em;
+    margin: 0;
+}
+
+.location-item-category {
+    color: var(--text-light);
+    font-size: 0.75em;
+    margin: 3px 0 0;
+}
+
+/* ===== LEGEND ===== */
+.legend {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.8em;
+    color: var(--text);
+}
+
+.legend-marker {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: var(--green);
+}
+
+.legend-marker.selected {
+    background: var(--orange);
+}
+
+.legend-book {
+    font-size: 1.1em;
+    flex-shrink: 0;
+}
+
+/* ===== INFO CARD ===== */
+.info-card {
+    background: linear-gradient(135deg, #C0392B 0%, #F1C40F 100%);
+    border-radius: 24px;
+    padding: 32px 24px;
+    text-align: center;
+    color: white;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
+.info-emoji {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.info-card h3 {
+    margin: 12px 0 8px;
+    color: white;
+    font-size: 1.15em;
+    font-weight: 700;
+}
+
+.info-card p {
+    margin: 0;
+    font-size: 0.85em;
+    color: rgba(255, 255, 255, 0.95);
+    line-height: 1.5;
+}
+
+/* ===== MODAL ===== */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    position: relative;
+    background: white;
+    border-radius: 12px;
+    width: 100%;
+    height: 90vh;
+    max-width: 1000px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+
+.modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: white;
+    border: none;
+    border-radius: 4px;
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 10;
+    color: var(--text-light);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-close:hover {
+    background: var(--bg-light);
+    color: var(--text);
+}
+
+.story-frame {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1200px) {
+    .peta-main {
+        grid-template-columns: 1fr 320px;
+        gap: 16px;
+        padding: 0 16px 16px 16px;
+    }
+
+    .map-canvas {
+        height: 420px;
+    }
+
+    .peta-header {
+        margin: 16px 16px 16px 16px;
+        padding: 16px 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .peta-header {
+        margin: 12px;
+        padding: 14px 16px;
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .header-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 32px;
+    }
+
+    .header-text h1 {
+        font-size: 1.3em;
+    }
+
+    .header-text p {
+        font-size: 0.85em;
+    }
+
+    .peta-main {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        padding: 0 12px 12px 12px;
+    }
+
+    .map-canvas {
+        height: 300px;
+    }
+
+    .sidebar-section {
+        gap: 12px;
+    }
+
+    .sidebar-card {
+        padding: 12px;
+    }
+
+    .sidebar-card h3 {
+        font-size: 0.9em;
+    }
+
+    .location-item {
+        padding: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .peta-header {
+        margin: 10px;
+        padding: 12px 14px;
+        gap: 10px;
+    }
+
+    .header-icon {
+        width: 42px;
+        height: 42px;
+        font-size: 28px;
+    }
+
+    .header-text h1 {
+        font-size: 1.1em;
+    }
+
+    .header-text p {
+        font-size: 0.75em;
+    }
+
+    .peta-main {
+        padding: 0 10px 10px 10px;
+    }
+
+    .map-canvas {
+        height: 250px;
+    }
+
+    .map-title,
+    .map-instructions {
+        font-size: 0.8em;
+        padding: 8px 12px;
+    }
+
+    .sidebar-card {
+        padding: 10px;
+    }
+
+    .sidebar-card h3 {
+        font-size: 0.85em;
+    }
+
+    .location-item {
+        padding: 8px 10px;
+    }
+}
