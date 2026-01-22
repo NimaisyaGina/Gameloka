@@ -1,0 +1,7 @@
+{
+  "name": "Bang Buay - Gameloka Virtual Assistant",
+  "description": "Teman belajar bahasa dan budaya Betawi yang asik, interaktif, dan adaptif untuk Generasi Z.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
