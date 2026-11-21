@@ -137,7 +137,27 @@
         </div>
     </footer>
 
+    <!-- Container untuk Bang Buay Virtual Assistant -->
+    <div id="bang-buay-va-container"></div>
+
     <script src="{% static 'js/home.js' %}"></script>
+    
+    <!-- Bang Buay Virtual Assistant Script -->
+    {% if user.is_authenticated %}
+    <script type="module">
+        // Dynamically import dan mount VA Bubble
+        import('/static/fitur-ai/va-bubble.js').then(module => {
+            if (window.mountVABubble) {
+                window.mountVABubble({ 
+                    isAuthenticated: true
+                });
+            }
+        }).catch(err => {
+            console.log('VA Bubble tidak tersedia:', err);
+        });
+    </script>
+    {% endif %}
+    
     {% block extra_js %}{% endblock %}
 </body>
 </html>
