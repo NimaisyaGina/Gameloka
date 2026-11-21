@@ -18,6 +18,18 @@ export default defineConfig(({ mode }) => {
         alias: {
           '@': path.resolve(__dirname, '.'),
         }
+      },
+      build: {
+        rollupOptions: {
+          input: {
+            main: path.resolve(__dirname, 'index.html'),
+            'va-bubble': path.resolve(__dirname, 'va-mount.tsx')
+          },
+          output: {
+            entryFileNames: '[name].js',
+            chunkFileNames: '[name].js'
+          }
+        }
       }
     };
 });
