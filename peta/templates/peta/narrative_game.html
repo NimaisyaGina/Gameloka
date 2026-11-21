@@ -1,33 +1,21 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}{{ story.title }} - Gameloka{% endblock %}
+{% block title %}{{ story.title }} - Sekilas Kisah Gameloka{% endblock %}
+
+{% block page_badge %}🎭 SEKILAS KISAH • {{ story.title|upper }}{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/narrative_game_enhanced.css' %}">
-<style>
-  body {
-    margin: 0;
-    padding: 0;
-    background: #f5f5f5;
-  }
-  
-  #gameContainer {
-    width: 100%;
-    min-height: 100vh;
-  }
-</style>
+<link rel="stylesheet" href="{% static 'css/narrative_game_enhanced.css' %}?v=20261121v4">
 {% endblock %}
 
 {% block content %}
-<div id="gameContainer" style="width: 100%; min-height: 100vh;"></div>
+<div id="gameContainer" style="width:100%;min-height:calc(100vh - 140px);"></div>
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'js/narrative_game_engine.js' %}"></script>
 <script>
-    // Pass story ID to JavaScript engine
     window.CURRENT_STORY_ID = '{{ story.id }}';
-    console.log('[Template] Story loaded:', window.CURRENT_STORY_ID);
 </script>
+<script src="{% static 'js/narrative_game_engine.js' %}?v=20261121v4"></script>
 {% endblock %}

@@ -1,464 +1,378 @@
+{% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pustaka Belajar - Gameloka</title>
-    <link href="https://cdn.tailwindcss.com" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+
+{% block title %}Pustaka Belajar - Gameloka 8-Bit{% endblock %}
+
+{% block page_badge %}📚 PUSTAKA BELAJAR{% endblock %}
+
+{% block extra_css %}
+<style>
+    .pustaka-header-box {
+        padding: 26px;
+        margin-bottom: 24px;
+    }
+
+    .pustaka-search-wrap {
+        position: relative;
+        margin-bottom: 18px;
+    }
+
+    .pustaka-search-icon {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 16px;
+        pointer-events: none;
+    }
+
+    .pustaka-filters {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .pustaka-filter-btn {
+        font-family: var(--font-hud);
+        font-size: 0.78rem;
+        padding: 7px 14px;
+        background: var(--dark-purple);
+        color: var(--lavender-muted);
+        border: 2px solid var(--ultra-violet);
+        cursor: pointer;
+    }
+
+    .pustaka-filter-btn.active {
+        background: var(--saffron);
+        color: var(--dark-purple-deep);
+        border-color: var(--saffron-dark);
+        font-weight: 700;
+        box-shadow: 3px 3px 0 var(--dark-purple-deep);
+    }
+
+    .pustaka-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+
+    .pustaka-card {
+        background: var(--dark-purple-deep);
+        border: 3px solid var(--ultra-violet);
+        box-shadow: 5px 5px 0 #110d1b;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 14px;
+        cursor: pointer;
+        transition: transform 0.12s ease, border-color 0.15s ease;
+    }
+
+    .pustaka-card:hover {
+        transform: translate(-2px, -3px);
+        border-color: var(--saffron);
+    }
+
+    .line-clamp-3 {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .like-btn-pixel {
+        background: var(--dark-purple);
+        border: 2px solid var(--ultra-violet);
+        color: var(--cream);
+        padding: 5px 10px;
+        cursor: pointer;
+        font-size: 0.95rem;
+    }
+
+    .like-btn-pixel.liked {
+        border-color: var(--saffron);
+        color: var(--saffron);
+    }
+
+    @media (max-width: 980px) {
+        .pustaka-grid {
+            grid-template-columns: repeat(2, 1fr);
         }
+    }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    @media (max-width: 640px) {
+        .pustaka-grid {
+            grid-template-columns: 1fr;
         }
+    }
+</style>
+{% endblock %}
 
-        .gradient-primary {
-            background: linear-gradient(135deg, #2980B9 0%, #F1C40F 100%);
-        }
-
-        .category-bahasa {
-            background: #2980B9;
-        }
-
-        .category-sejarah {
-            background: #C0392B;
-        }
-
-        .category-tradisi {
-            background: #27AE60;
-        }
-
-        .category-kuliner {
-            background: #F1C40F;
-            color: #333;
-        }
-
-        .article-card {
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .article-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 50;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            animation: fadeIn 0.3s ease;
-        }
-
-        .modal.show {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background-color: white;
-            padding: 2rem;
-            border-radius: 1.5rem;
-            max-width: 700px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-            animation: slideUp 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideUp {
-            from {
-                transform: translateY(30px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .category-badge {
-            display: inline-block;
-            padding: 0.5rem 1rem;
-            border-radius: 9999px;
-            color: white;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .search-input {
-            background: #FAF3E0;
-            border: 2px solid transparent;
-            transition: all 0.3s;
-        }
-
-        .search-input:focus {
-            border-color: #2980B9;
-            outline: none;
-            background: white;
-        }
-
-        .filter-button {
-            transition: all 0.3s;
-            border-radius: 9999px;
-            padding: 0.5rem 1rem;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .filter-button.active {
-            color: white;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .filter-button:not(.active) {
-            background: #FAF3E0;
-            color: #333;
-        }
-
-        .like-button {
-            background: none;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 20px;
-        }
-
-        .like-button:hover {
-            transform: scale(1.2);
-        }
-
-        .like-button.liked {
-            color: #E74C3C;
-        }
-
-        @media (max-width: 768px) {
-            .modal-content {
-                width: 95%;
-                padding: 1.5rem;
-            }
-
-            [style*="grid-template-columns: repeat(3"] {
-                grid-template-columns: repeat(1, 1fr) !important;
-            }
-        }
-
-        @media (min-width: 769px) and (max-width: 1024px) {
-            [style*="grid-template-columns: repeat(3"] {
-                grid-template-columns: repeat(2, 1fr) !important;
-            }
-        }
-
-        .line-clamp-3 {
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 3rem;
-        }
-    </style>
-</head>
-<body style="background: linear-gradient(135deg, #2980B9 0%, #F1C40F 100%); min-height: 100vh;">
-    <div style="max-width: 1280px; margin: 0 auto; padding: 2rem 1rem;">
-        <!-- Back Button -->
-        <div style="margin-bottom: 2rem;">
-            <a href="/" style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.2); color: white; padding: 0.75rem 1.5rem; border-radius: 25px; text-decoration: none; font-weight: 600; transition: all 0.3s; border: 2px solid rgba(255,255,255,0.3);" onmouseover="this.style.background='rgba(255,255,255,0.3)'; this.style.borderColor='rgba(255,255,255,0.5)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'; this.style.borderColor='rgba(255,255,255,0.3)'">
-                <span style="font-size: 18px;">←</span>
-                <span>Kembali ke Beranda</span>
-            </a>
-        </div>
-
-        <!-- Header -->
-        <div style="background: white; border-radius: 1.5rem; box-shadow: 0 20px 60px rgba(0,0,0,0.2); padding: 2rem; margin-bottom: 2rem;">
-            <!-- Title -->
-            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
-                <div class="gradient-primary" style="width: 48px; height: 48px; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+{% block content %}
+<div class="pixel-page">
+    <div class="pixel-container">
+        <div class="pixel-panel-gold pustaka-header-box">
+            <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;flex-wrap:wrap;">
+                <div style="width:52px;height:52px;background:var(--dark-green);border:3px solid var(--saffron);display:flex;align-items:center;justify-content:center;font-size:1.75rem;">
                     📚
                 </div>
                 <div>
-                    <h1 style="font-size: 28px; font-weight: 700; color: #2980B9; margin-bottom: 0.25rem;">Pustaka Belajar</h1>
-                    <p style="font-size: 14px; color: #999;">Kumpulan artikel tentang sejarah, bahasa dan budaya Betawi</p>
+                    <span class="pixel-badge pixel-badge-violet" style="margin-bottom:6px;">PILAR BUDAYA • ARSIP DIGITAL</span>
+                    <h1 class="font-pixel" style="font-size:clamp(1.05rem,2.2vw,1.45rem);color:var(--saffron);">
+                        PUSTAKA BELAJAR BETAWI
+                    </h1>
+                    <p style="font-size:0.9rem;color:var(--lavender-muted);">
+                        Artikel &amp; esai sejarah, sastra klasik Betawi, bahasa, tradisi, serta kuliner Nusantara.
+                    </p>
                 </div>
             </div>
 
-            <!-- Search Bar -->
-            <div style="position: relative; margin-bottom: 1.5rem;">
-                <span style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); font-size: 18px;">🔍</span>
+            <div class="pustaka-search-wrap">
+                <span class="pustaka-search-icon">🔍</span>
                 <input
                     type="text"
                     id="searchInput"
-                    placeholder="Cari artikel..."
-                    class="search-input"
-                    style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.75rem; border-radius: 0.75rem; font-size: 14px;"
-                />
+                    placeholder="Cari artikel (misal: Marakarma, Ondel-ondel, Kerak Telor)..."
+                    class="pixel-input"
+                    style="padding-left:42px;"
+                >
             </div>
 
-            <!-- Category Filter -->
-            <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
-                <span style="font-size: 14px; font-weight: 600; color: #666; display: flex; align-items: center; gap: 0.5rem;">
-                    <span style="font-size: 16px;">🏷️</span> Kategori:
-                </span>
-                <div id="categoryButtons" style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-                    <!-- Will be populated by JavaScript -->
-                </div>
+            <div class="pustaka-filters">
+                <span class="font-hud" style="font-size:0.8rem;color:var(--saffron);">🏷️ KATEGORI:</span>
+                <div id="categoryButtons" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
             </div>
         </div>
 
-        <!-- Articles Grid -->
-        <div id="articlesContainer" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem;">
-            <!-- Will be populated by JavaScript -->
-        </div>
+        <div id="articlesContainer" class="pustaka-grid"></div>
 
-        <!-- Empty State -->
-        <div id="emptyState" class="empty-state" style="display: none; background: white; border-radius: 1.5rem; box-shadow: 0 20px 60px rgba(0,0,0,0.2);">
-            <div style="font-size: 48px; margin-bottom: 1rem;">📭</div>
-            <h3 style="font-size: 18px; font-weight: 700; color: #333; margin-bottom: 0.5rem;">Tidak ada artikel ditemukan</h3>
-            <p style="font-size: 14px; color: #666;">Coba kata kunci lain atau ubah filter kategori</p>
+        <div id="emptyState" class="pixel-panel" style="display:none;text-align:center;padding:40px 20px;">
+            <div style="font-size:2.5rem;margin-bottom:10px;">📭</div>
+            <h2 class="font-hud" style="color:var(--saffron);font-size:1.1rem;margin-bottom:6px;">Tidak ada artikel ditemukan</h2>
+            <p style="color:var(--lavender-muted);font-size:0.9rem;">Coba kata kunci lain atau ubah filter kategori.</p>
         </div>
     </div>
+</div>
 
-    <!-- Modal -->
-    <div class="modal" id="articleModal">
-        <div class="modal-content">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
-                <div style="flex: 1;">
-                    <div id="modalCategory" class="category-badge" style="margin-bottom: 1rem;"></div>
-                    <h2 id="modalTitle" style="font-size: 24px; font-weight: 700; color: #333;"></h2>
-                </div>
-                <button onclick="closeModal()" style="background: none; border: none; font-size: 28px; cursor: pointer; color: #666; padding: 0;">×</button>
+<!-- Reader Modal -->
+<div class="pixel-modal-backdrop" id="articleModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="pixel-modal-box">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px;">
+            <div>
+                <div id="modalCategory" class="pixel-badge pixel-badge-gold" style="margin-bottom:10px;"></div>
+                <h2 id="modalTitle" class="font-hud" style="font-size:1.2rem;color:var(--saffron);"></h2>
             </div>
+            <button type="button" onclick="closeModal()" class="pixel-btn pixel-btn-sm pixel-btn-danger">✕</button>
+        </div>
 
-            <div style="background: #FAF3E0; border-radius: 1rem; padding: 1.5rem; margin-bottom: 1.5rem;">
-                <p id="modalContent" style="color: #333; line-height: 1.8; font-size: 15px;"></p>
-            </div>
+        <div class="pixel-panel-green" style="padding:18px;margin-bottom:18px;">
+            <p id="modalContent" style="color:var(--cream);line-height:1.75;font-size:0.96rem;"></p>
+        </div>
 
-            <button id="modalLikeBtn" class="like-button" style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; font-size: 24px;">
-                ♡
-            </button>
-
-            <button onclick="closeModal()" class="gradient-primary" style="width: 100%; padding: 0.75rem 1.5rem; border-radius: 9999px; border: none; color: white; font-weight: 700; cursor: pointer; transition: all 0.3s;">
-                Tutup
-            </button>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button type="button" id="modalLikeBtn" class="pixel-btn pixel-btn-violet" style="flex:1;"></button>
+            <button type="button" onclick="closeModal()" class="pixel-btn pixel-btn-gold" style="flex:1;">Tutup Artikel</button>
         </div>
     </div>
+</div>
 
-    <script id="articles-data" type="application/json">
-{{ articles|safe }}
-    </script>
+<script id="articles-data" type="application/json">{{ articles|safe }}</script>
 
-    <script>
-        let allArticles = [];
-        let currentCategory = 'Semua';
-        let searchTerm = '';
-        let likedArticles = {};
-        let currentArticle = null;
+<script>
+let allArticles = [];
+let currentCategory = 'Semua';
+let searchTerm = '';
+let likedArticles = {};
+let currentArticle = null;
 
-        const categories = ['Semua', 'Bahasa', 'Sejarah', 'Tradisi', 'Kuliner'];
+const categories = ['Semua', 'Bahasa', 'Sejarah', 'Tradisi', 'Kuliner'];
 
-        const categoryColors = {
-            'Bahasa': '#2980B9',
-            'Sejarah': '#C0392B',
-            'Tradisi': '#27AE60',
-            'Kuliner': '#F1C40F'
-        };
+const categoryBadges = {
+    'Bahasa': 'pixel-badge-violet',
+    'Sejarah': 'pixel-badge-gold',
+    'Tradisi': 'pixel-badge-green',
+    'Kuliner': 'pixel-badge-gold'
+};
 
-        const categoryEmojis = {
-            'Bahasa': '💬',
-            'Sejarah': '🏺',
-            'Tradisi': '🎭',
-            'Kuliner': '🍜'
-        };
+const categoryEmojis = {
+    'Bahasa': '💬',
+    'Sejarah': '🏺',
+    'Tradisi': '🎭',
+    'Kuliner': '🍜'
+};
 
-        // Load data
-        function loadData() {
-            const dataScript = document.getElementById('articles-data');
-            if (dataScript && dataScript.textContent.trim()) {
-                try {
-                    allArticles = JSON.parse(dataScript.textContent);
-                    console.log('Articles loaded:', allArticles);
-                } catch (e) {
-                    console.error('Error parsing articles data:', e);
-                }
-            }
-
-            const saved = localStorage.getItem('gameloka-liked-articles');
-            if (saved) {
-                likedArticles = JSON.parse(saved);
-            }
+function loadData() {
+    const dataScript = document.getElementById('articles-data');
+    if (dataScript && dataScript.textContent.trim()) {
+        try {
+            allArticles = JSON.parse(dataScript.textContent);
+        } catch (e) {
+            console.error('Error parsing articles data:', e);
         }
+    }
 
-        // Initialize
-        function init() {
-            loadData();
+    try {
+        const saved = localStorage.getItem('gameloka-liked-articles');
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            if (parsed && typeof parsed === 'object') likedArticles = parsed;
+        }
+    } catch (e) {
+        likedArticles = {};
+    }
+}
+
+function renderCategoryButtons() {
+    const container = document.getElementById('categoryButtons');
+    container.innerHTML = '';
+
+    categories.forEach(category => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'pustaka-filter-btn' + (currentCategory === category ? ' active' : '');
+        button.textContent = (category === 'Semua' ? '📚' : (categoryEmojis[category] || '📚')) + ' ' + category;
+        button.onclick = () => {
+            currentCategory = category;
             renderCategoryButtons();
             renderArticles();
-            setupEventListeners();
-        }
+        };
+        container.appendChild(button);
+    });
+}
 
-        // Setup event listeners
-        function setupEventListeners() {
-            document.getElementById('searchInput').addEventListener('keyup', function(e) {
-                searchTerm = e.target.value;
-                renderArticles();
-            });
-        }
+function getFilteredArticles() {
+    const query = searchTerm.toLowerCase();
+    return allArticles.filter(article => {
+        const matchesSearch = article.title.toLowerCase().includes(query) ||
+                              article.content.toLowerCase().includes(query);
+        const matchesCategory = currentCategory === 'Semua' || article.category === currentCategory;
+        return matchesSearch && matchesCategory;
+    });
+}
 
-        // Render category buttons
-        function renderCategoryButtons() {
-            const container = document.getElementById('categoryButtons');
-            container.innerHTML = '';
+function renderArticles() {
+    const filtered = getFilteredArticles();
+    const container = document.getElementById('articlesContainer');
+    const emptyState = document.getElementById('emptyState');
 
-            categories.forEach(category => {
-                const button = document.createElement('button');
-                button.className = 'filter-button' + (currentCategory === category ? ' active' : '');
-                button.textContent = (category === 'Semua' ? '📚' : categoryEmojis[category] || '📚') + ' ' + category;
-                
-                if (currentCategory === category) {
-                    button.style.background = category === 'Semua' ? '#2980B9' : categoryColors[category];
-                }
+    if (filtered.length === 0) {
+        container.style.display = 'none';
+        emptyState.style.display = 'block';
+        return;
+    }
 
-                button.onclick = () => {
-                    currentCategory = category;
-                    renderCategoryButtons();
-                    renderArticles();
-                };
+    container.style.display = 'grid';
+    emptyState.style.display = 'none';
+    container.innerHTML = '';
 
-                container.appendChild(button);
-            });
-        }
+    filtered.forEach(article => {
+        const card = document.createElement('article');
+        card.className = 'pustaka-card';
 
-        // Filter articles
-        function getFilteredArticles() {
-            return allArticles.filter(article => {
-                const matchesSearch = article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                     article.content.toLowerCase().includes(searchTerm.toLowerCase());
-                const matchesCategory = currentCategory === 'Semua' || article.category === currentCategory;
-                return matchesSearch && matchesCategory;
-            });
-        }
+        const isLiked = !!likedArticles[article.id];
+        const emoji = categoryEmojis[article.category] || '📚';
+        const badgeCls = categoryBadges[article.category] || 'pixel-badge-violet';
 
-        // Render articles
-        function renderArticles() {
-            const filtered = getFilteredArticles();
-            const container = document.getElementById('articlesContainer');
-            const emptyState = document.getElementById('emptyState');
+        const top = document.createElement('div');
+        top.style.cssText = 'display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px;';
 
-            if (filtered.length === 0) {
-                container.style.display = 'none';
-                emptyState.style.display = 'block';
-                return;
-            }
+        const catBadge = document.createElement('span');
+        catBadge.className = 'pixel-badge ' + badgeCls;
+        catBadge.textContent = emoji + ' ' + article.category;
 
-            container.style.display = 'grid';
-            emptyState.style.display = 'none';
-            container.innerHTML = '';
+        const likeBtn = document.createElement('button');
+        likeBtn.type = 'button';
+        likeBtn.className = 'like-btn-pixel' + (isLiked ? ' liked' : '');
+        likeBtn.textContent = isLiked ? '❤️' : '♡';
+        likeBtn.onclick = (e) => {
+            e.stopPropagation();
+            toggleLike(article.id);
+        };
 
-            filtered.forEach(article => {
-                const card = document.createElement('div');
-                card.className = 'article-card';
-                card.style.background = 'white';
-                card.style.borderRadius = '1rem';
-                card.style.padding = '1.5rem';
-                card.style.boxShadow = '0 2px 12px rgba(0, 0, 0, 0.08)';
+        top.appendChild(catBadge);
+        top.appendChild(likeBtn);
 
-                const categoryColor = categoryColors[article.category] || '#2980B9';
-                const categoryEmoji = categoryEmojis[article.category] || '📚';
-                const isLiked = likedArticles[article.id] || false;
+        const title = document.createElement('h3');
+        title.className = 'font-hud';
+        title.style.cssText = 'font-size:0.98rem;color:var(--saffron);margin-bottom:8px;';
+        title.textContent = article.title;
 
-                card.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
-                        <span class="category-badge" style="background: ${categoryColor};">
-                            ${categoryEmoji} ${article.category}
-                        </span>
-                        <button class="like-button ${isLiked ? 'liked' : ''}" onclick="toggleLike(event, '${article.id}')" style="${isLiked ? 'color: #E74C3C;' : 'color: #DDD;'}">
-                            ${isLiked ? '❤️' : '♡'}
-                        </button>
-                    </div>
-                    <h3 style="font-size: 16px; font-weight: 700; color: ${categoryColor}; margin-bottom: 0.75rem;">${article.title}</h3>
-                    <p class="line-clamp-3" style="font-size: 13px; color: #666; line-height: 1.5; margin-bottom: 1rem;">${article.content}</p>
-                    <div style="padding-top: 1rem; border-top: 1px solid #EEE;">
-                        <span style="font-size: 13px; color: #2980B9; font-weight: 600; cursor: pointer;">Baca selengkapnya →</span>
-                    </div>
-                `;
+        const excerpt = document.createElement('p');
+        excerpt.className = 'line-clamp-3';
+        excerpt.style.cssText = 'font-size:0.88rem;color:var(--cream);line-height:1.55;';
+        excerpt.textContent = article.content;
 
-                card.onclick = () => openModal(article);
-                container.appendChild(card);
-            });
-        }
+        const upper = document.createElement('div');
+        upper.appendChild(top);
+        upper.appendChild(title);
+        upper.appendChild(excerpt);
 
-        // Open modal
-        function openModal(article) {
-            currentArticle = article;
-            const categoryColor = categoryColors[article.category] || '#2980B9';
-            const categoryEmoji = categoryEmojis[article.category] || '📚';
-            const isLiked = likedArticles[article.id] || false;
+        const footer = document.createElement('div');
+        footer.style.cssText = 'padding-top:12px;border-top:2px solid var(--ultra-violet);font-family:var(--font-hud);font-size:0.78rem;color:var(--saffron);';
+        footer.textContent = '📖 BACA SELENGKAPNYA →';
 
-            document.getElementById('modalCategory').textContent = categoryEmoji + ' ' + article.category;
-            document.getElementById('modalCategory').style.background = categoryColor;
-            document.getElementById('modalTitle').textContent = article.title;
-            document.getElementById('modalTitle').style.color = categoryColor;
-            document.getElementById('modalContent').textContent = article.content;
+        card.appendChild(upper);
+        card.appendChild(footer);
+        card.onclick = () => openModal(article);
+        container.appendChild(card);
+    });
+}
 
-            const likeBtn = document.getElementById('modalLikeBtn');
-            likeBtn.textContent = isLiked ? '❤️' : '♡';
-            likeBtn.className = 'like-button' + (isLiked ? ' liked' : '');
-            likeBtn.onclick = (e) => {
-                e.stopPropagation();
-                toggleLike(e, article.id);
-                renderArticles();
-            };
+function updateModalLikeButton(articleId) {
+    const isLiked = !!likedArticles[articleId];
+    const likeBtn = document.getElementById('modalLikeBtn');
+    likeBtn.textContent = isLiked ? '❤️ Disukai (Batalkan)' : '♡ Simpan ke Favorit';
+}
 
-            document.getElementById('articleModal').classList.add('show');
-        }
+function openModal(article) {
+    currentArticle = article;
+    const emoji = categoryEmojis[article.category] || '📚';
+    const badgeCls = categoryBadges[article.category] || 'pixel-badge-gold';
 
-        // Close modal
-        function closeModal() {
-            document.getElementById('articleModal').classList.remove('show');
-            currentArticle = null;
-        }
+    const catEl = document.getElementById('modalCategory');
+    catEl.className = 'pixel-badge ' + badgeCls;
+    catEl.textContent = emoji + ' ' + article.category;
 
-        // Toggle like
-        function toggleLike(event, articleId) {
-            event.stopPropagation();
-            likedArticles[articleId] = !likedArticles[articleId];
-            localStorage.setItem('gameloka-liked-articles', JSON.stringify(likedArticles));
-            renderArticles();
-            if (currentArticle && currentArticle.id === articleId) {
-                openModal(currentArticle);
-            }
-        }
+    document.getElementById('modalTitle').textContent = article.title;
+    document.getElementById('modalContent').textContent = article.content;
 
-        // Close modal when clicking outside
-        document.addEventListener('click', function(event) {
-            const modal = document.getElementById('articleModal');
-            if (event.target === modal) {
-                closeModal();
-            }
-        });
+    updateModalLikeButton(article.id);
+    document.getElementById('modalLikeBtn').onclick = () => toggleLike(article.id);
+    document.getElementById('articleModal').classList.add('show');
+}
 
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', init);
-    </script>
-</body>
-</html>
+function closeModal() {
+    document.getElementById('articleModal').classList.remove('show');
+    currentArticle = null;
+}
+
+function toggleLike(articleId) {
+    likedArticles[articleId] = !likedArticles[articleId];
+    try {
+        localStorage.setItem('gameloka-liked-articles', JSON.stringify(likedArticles));
+    } catch (e) {}
+    renderArticles();
+    if (currentArticle && currentArticle.id === articleId) {
+        updateModalLikeButton(articleId);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadData();
+    renderCategoryButtons();
+    renderArticles();
+
+    document.getElementById('searchInput').addEventListener('input', function (e) {
+        searchTerm = e.target.value;
+        renderArticles();
+    });
+
+    const modal = document.getElementById('articleModal');
+    modal.addEventListener('click', function (event) {
+        if (event.target === modal) closeModal();
+    });
+});
+</script>
+{% endblock %}

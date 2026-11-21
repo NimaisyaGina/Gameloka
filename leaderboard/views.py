@@ -2,34 +2,39 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 import json
 from .models import LeaderboardEntry
 from profileuser.models import UserProfile
 
 
+@login_required
 def leaderboard_view(request):
     """View untuk halaman leaderboard"""
-   
     stats = LeaderboardEntry.get_statistics('all-time')
-    
+    weekly_stats = LeaderboardEntry.get_statistics('weekly')
+    daily_stats = LeaderboardEntry.get_statistics('daily')
 
     all_time_data = LeaderboardEntry.get_leaderboard_all_time()
     all_time_leaderboard = format_leaderboard_data(all_time_data)
-   
+
     weekly_data = LeaderboardEntry.get_leaderboard_weekly()
     weekly_leaderboard = format_leaderboard_data(weekly_data)
-    
+
     daily_data = LeaderboardEntry.get_leaderboard_daily()
     daily_leaderboard = format_leaderboard_data(daily_data)
-    
-   
-    weekly_stats = LeaderboardEntry.get_statistics('weekly')
-    daily_stats = LeaderboardEntry.get_statistics('daily')
-    
+
+    stats_by_period = {
+        'all-time': stats,
+        'weekly': weekly_stats,
+        'daily': daily_stats,
+    }
+
     context = {
         'stats': stats,
         'weekly_stats': weekly_stats,
         'daily_stats': daily_stats,
+        'stats_json': json.dumps(stats_by_period),
         'all_time_leaderboard': all_time_leaderboard,
         'weekly_leaderboard': weekly_leaderboard,
         'daily_leaderboard': daily_leaderboard,
@@ -37,15 +42,21 @@ def leaderboard_view(request):
         'weekly_json': json.dumps(weekly_leaderboard),
         'daily_json': json.dumps(daily_leaderboard),
     }
-    
+
     return render(request, 'leaderboard/leaderboard.html', context)
 
 
 @require_http_methods(["GET"])
 def get_leaderboard(request):
     """API endpoint untuk dapatkan leaderboard berdasarkan periode"""
+    if not request.user.is_authenticated:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Authentication required'
+        }, status=401)
+
     period = request.GET.get('period', 'all-time')
-    
+
     try:
         if period == 'weekly':
             data = LeaderboardEntry.get_leaderboard_weekly()
@@ -53,18 +64,18 @@ def get_leaderboard(request):
         elif period == 'daily':
             data = LeaderboardEntry.get_leaderboard_daily()
             stats = LeaderboardEntry.get_statistics('daily')
-        else: 
+        else:
             data = LeaderboardEntry.get_leaderboard_all_time()
             stats = LeaderboardEntry.get_statistics('all-time')
-        
+
         leaderboard = format_leaderboard_data(data)
-        
+
         return JsonResponse({
             'status': 'success',
             'data': leaderboard,
             'stats': stats
         })
-    
+
     except Exception as e:
         return JsonResponse({
             'status': 'error',
@@ -76,40 +87,35 @@ def get_leaderboard(request):
 @csrf_exempt
 def add_score(request):
     """API endpoint untuk menambah skor ke leaderboard (dari Arena Jawara)"""
+    if not request.user.is_authenticated:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Authentication required'
+        }, status=401)
+
     try:
         data = json.loads(request.body)
-        user_id = data.get('user_id')
         score = data.get('score')
         game_type = data.get('game_type', 'Arena Jawara')
-        
-        if not user_id or not score:
+
+        if score is None:
             return JsonResponse({
                 'status': 'error',
-                'message': 'user_id dan score harus diisi'
+                'message': 'score harus diisi'
             }, status=400)
-        
-      
-        from django.contrib.auth.models import User
-        try:
-            user = User.objects.get(id=user_id)
-        except User.DoesNotExist:
-            return JsonResponse({
-                'status': 'error',
-                'message': 'User tidak ditemukan'
-            }, status=404)
-        
+
         entry = LeaderboardEntry.objects.create(
-            user=user,
-            score=int(score),
+            user=request.user,
+            score=max(0, min(100, int(score))),
             game_type=game_type
         )
-        
+
         return JsonResponse({
             'status': 'success',
             'message': 'Skor berhasil ditambahkan',
             'entry_id': entry.id
         })
-    
+
     except json.JSONDecodeError:
         return JsonResponse({
             'status': 'error',
@@ -125,7 +131,7 @@ def add_score(request):
 def format_leaderboard_data(raw_data):
     """Format data leaderboard dengan rank dan emoji"""
     emojis = ['👨‍🎓', '👩‍🎓', '👨', '👩', '🧑', '👧', '👦', '👩‍🦰', '👨‍🦱', '👩‍🦱']
-    
+
     formatted = []
     for idx, entry in enumerate(raw_data):
         user = entry['user']
@@ -133,12 +139,9 @@ def format_leaderboard_data(raw_data):
             profile = user.profile
         except UserProfile.DoesNotExist:
             profile = None
-        
-        
+
         trend = 'same'
-        
-      
-        full_name = ''
+
         if profile and profile.full_name:
             full_name = profile.full_name
         elif user.first_name:
@@ -147,7 +150,7 @@ def format_leaderboard_data(raw_data):
                 full_name += f" {user.last_name}"
         else:
             full_name = user.username
-        
+
         formatted.append({
             'rank': idx + 1,
             'name': full_name,
@@ -157,5 +160,5 @@ def format_leaderboard_data(raw_data):
             'trend': trend,
             'user_id': user.id
         })
-    
+
     return formatted

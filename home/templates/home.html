@@ -1,136 +1,440 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Gameloka - Gamifikasi Bahasa Betawi{% endblock %}
+{% block title %}Gameloka — 8-Bit Bahasa, Budaya &amp; Dongeng Betawi{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}?v=20261121v4">
+{% endblock %}
+
+{% block back_bar %}{% endblock %}
 
 {% block content %}
-
-<!-- Hero Section -->
-<section style="background: linear-gradient(135deg, #FF9D3D 0%, #FFC400 50%, #A4C639 100%); padding: 48px 24px 0 24px; position: relative; overflow: hidden;">
-    <div style="max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center;">
-     
-        <div style="color: white; z-index: 2;">
-            <h1 style="font-size: 48px; font-weight: 800; margin-bottom: 16px; line-height: 1.2;">
-                Selamat Datang di Gameloka
-            </h1>
-            <p style="font-size: 18px; margin-bottom: 32px; opacity: 0.95; line-height: 1.6;">
-                Platform pelestarian Bahasa Betawi berbasis gamifikasi. Belajar bahasa dengan cara yang menyenangkan!
-            </p>
-            
-         
-            <div style="display: flex; gap: 16px; margin-bottom: 48px;">
-                <a href="{% if user.is_authenticated %}/kompas/{% else %}{% url 'login' %}{% endif %}" style="background: white; color: #FF9D3D; padding: 12px 32px; border: none; border-radius: 25px; font-weight: 700; font-size: 16px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-decoration: none; display: inline-block;">
-                    {% if user.is_authenticated %}Mulai Belajar{% else %}Daftar & Belajar{% endif %} 
-                </a>
-                <button style="background: transparent; color: white; padding: 12px 32px; border: 2px solid white; border-radius: 25px; font-weight: 700; font-size: 16px; cursor: pointer; transition: all 0.3s;">
-                    Lihat Demo
-                </button>
-            </div>
-
-      
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;">
-                <div>
-                    <div style="font-size: 28px; font-weight: 800; margin-bottom: 4px;">500+</div>
-                    <div style="font-size: 14px; opacity: 0.9;">Kosakata</div>
+<!-- =========================================================
+     1. INTERACTIVE 8-BIT HIKAYAT MARAKARMA CINEMA STAGE
+     ========================================================= -->
+<section id="cinema-stage" class="cinema-section">
+    <div class="cinema-shell">
+        <div class="cinema-arcade-bezel">
+            <!-- Top Arcade HUD -->
+            <div class="cinema-hud">
+                <div class="cinema-hud-left">
+                    <span class="cinema-hearts" aria-label="Nyawa Kisah">♥♥♥</span>
+                    <span id="cinemaSceneLabel" class="cinema-scene-label">
+                        BABAK 1 • SIAP DIPUTAR
+                    </span>
                 </div>
-                <div>
-                    <div style="font-size: 28px; font-weight: 800; margin-bottom: 4px;">50+</div>
-                    <div style="font-size: 14px; opacity: 0.9;">Pelajaran</div>
-                </div>
-                <div>
-                    <div style="font-size: 28px; font-weight: 800; margin-bottom: 4px;">1K+</div>
-                    <div style="font-size: 14px; opacity: 0.9;">Pengguna</div>
+                <div class="cinema-hud-controls">
+                    <button type="button" id="cinemaAutoBtn" class="pixel-btn pixel-btn-sm pixel-btn-violet">⏯ AUTO: ON</button>
+                    <button type="button" id="cinemaSfxBtn" class="pixel-btn pixel-btn-sm pixel-btn-green">🔊 SFX ON</button>
+                    <a href="#menu-fitur" class="pixel-btn pixel-btn-sm pixel-btn-ghost">Menu Fitur ↓</a>
                 </div>
             </div>
-        </div>
 
-      
-        <div style="display: flex; align-items: center; justify-content: center;">
-            <div style="background: white; width: 280px; height: 280px; border-radius: 32px; padding: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 25px 70px rgba(0,0,0,0.12);">
-                <img src="{% static 'images/buaya.png' %}" alt="Gameloka Mascot" style="width: 100%; height: 100%; object-fit: contain;">
+            <!-- 8-Bit Animated Canvas Screen -->
+            <div class="cinema-screen-wrap">
+                <canvas id="marakarmaCanvas" width="320" height="180" aria-label="Animasi 8-Bit Hikayat Marakarma"></canvas>
+                <div class="cinema-scanlines pixel-scanlines"></div>
+
+                <!-- Title Overlay -->
+                <div id="cinemaTitleOverlay" class="cinema-title-overlay">
+                    <span class="pixel-badge pixel-badge-green">★ DONGENG BETAWI • MUHAMMAD BAKIR ★</span>
+                    <h1 class="cinema-title-heading">HIKAYAT MARAKARMA</h1>
+                    <p class="cinema-title-sub">
+                        Saksikan kisah interaktif <strong>Bagian 1: Si Miskin &amp; Berdirinya Kerajaan Puspa Sari</strong> dalam animasi 8-bit.
+                    </p>
+                    <div class="cinema-title-actions">
+                        <button type="button" id="cinemaStartBtn" class="pixel-btn pixel-btn-gold">
+                            ► PRESS START — MULAI DONGENG
+                        </button>
+                        <a href="#menu-fitur" class="pixel-btn pixel-btn-ghost">
+                            Lihat Menu Fitur ↓
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom RPG Dialogue Console -->
+            <div id="cinemaDialogBox" class="cinema-dialog-box" title="Klik untuk percepat teks">
+                <div class="cinema-dialog-top">
+                    <div id="cinemaPortrait" class="cinema-portrait">📜</div>
+                    <div style="flex:1;min-width:0;">
+                        <div class="cinema-dialog-meta">
+                            <span id="cinemaSpeaker" class="pixel-badge pixel-badge-gold">NARATOR</span>
+                            <span style="font-size:0.74rem;color:var(--lavender-muted);">Klik kotak dialog untuk percepat teks</span>
+                        </div>
+                        <p id="cinemaDialogText" class="cinema-dialog-text">
+                            Tekan "PRESS START — MULAI DONGENG" di atas untuk memulai film animasi 8-bit Hikayat Marakarma!
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Interactive Scene Action Slot -->
+                <div id="cinemaActionSlot" class="cinema-action-slot"></div>
+
+                <!-- Scene 6 Ending Action Slot -->
+                <div id="cinemaEndingSlot" class="cinema-ending-slot">
+                    <button type="button" id="replayCinemaBtn" class="pixel-btn pixel-btn-sm pixel-btn-violet">🔁 Putar Ulang Babak 1</button>
+                    <button type="button" data-open-locked="2" class="pixel-btn pixel-btn-sm pixel-btn-ghost">🔒 Lihat Babak 2</button>
+                    <a href="#menu-fitur" class="pixel-btn pixel-btn-sm pixel-btn-gold">🚀 Pilih Fitur Gameloka</a>
+                </div>
+
+                <!-- Navigation & Scene Timeline Dots -->
+                <div class="cinema-dialog-nav">
+                    <div id="cinemaDots" class="cinema-dots" aria-label="Pilih Adegan"></div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                        <button type="button" id="cinemaPrevBtn" class="pixel-btn pixel-btn-sm pixel-btn-violet" disabled>◀ SEBELUMNYA</button>
+                        <button type="button" id="cinemaNextBtn" class="pixel-btn pixel-btn-sm pixel-btn-gold">SELANJUTNYA ▶</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Features Section -->
-<section style="padding: 48px 24px; background: linear-gradient(135deg, #FF9D3D 0%, #FFC400 50%, #A4C639 100%); margin: 0;">
-    <div style="max-width: 1280px; margin: 0 auto;">
-        
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; justify-items: stretch;">
-            {% for feature in features %}
-            <div data-feature-id="{{ feature.id }}" style="background: white; border-radius: 24px; padding: 28px 20px; text-align: center; transition: transform 0.3s, box-shadow 0.3s; cursor: pointer; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08); border: 2px solid #f5f5f5;" onmouseover="this.style.transform='translateY(-6px)'; this.style.boxShadow='0 8px 24px rgba(0, 0, 0, 0.12)'; this.style.borderColor='#FF9D3D';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 12px rgba(0, 0, 0, 0.08)'; this.style.borderColor='#f5f5f5';">
-                <div style="font-size: 56px; margin-bottom: 12px;">
-                    {{ feature.emoji }}
+<div class="pixel-seam" aria-hidden="true"></div>
+
+<!-- =========================================================
+     2. PETA BABAK HIKAYAT MARAKARMA (3 EQUAL BOXY CARDS)
+     ========================================================= -->
+<section id="peta-dongeng" class="story-path-section">
+    <div class="home-container">
+        <div class="section-header-center">
+            <span class="pixel-badge pixel-badge-violet" style="margin-bottom:10px;">📖 ALUR PETUALANGAN DONGENG</span>
+            <h2 class="section-title-pixel">PETA BABAK HIKAYAT MARAKARMA</h2>
+            <p style="color:var(--lavender-muted);font-size:0.94rem;">
+                Pembuka Gameloka mengangkat Bagian 1 dari naskah klasik Betawi. Babak lanjutan hadir sebagai tantangan terkunci untuk petualangan belajarmu.
+            </p>
+        </div>
+
+        <div class="story-path-grid">
+            {% for ch in story_chapters %}
+                {% if ch.unlocked %}
+                <article class="chapter-card unlocked">
+                    <div class="chapter-card-body">
+                        <div class="chapter-level-tag">
+                            <span class="pixel-badge pixel-badge-gold">LEVEL {{ ch.level }} • TERBUKA</span>
+                            <span id="lvl1-complete-badge" class="pixel-badge pixel-badge-green" style="display:none;">✓ SELESAI</span>
+                        </div>
+                        <h3 class="font-hud" style="color:var(--saffron);font-size:1.02rem;margin-bottom:8px;">
+                            {{ ch.title }}
+                        </h3>
+                        <p style="color:var(--cream);font-size:0.89rem;line-height:1.55;">
+                            {{ ch.subtitle }}
+                        </p>
+                    </div>
+                    <div class="chapter-card-footer">
+                        <button type="button" id="lvl1PlayBtn" class="pixel-btn pixel-btn-gold pixel-btn-wrap" style="width:100%;">
+                            ▶ TONTON / ULANGI BABAK 1
+                        </button>
+                    </div>
+                </article>
+                {% else %}
+                <article class="chapter-card locked">
+                    <div class="chapter-card-body">
+                        <div class="chapter-level-tag">
+                            <span class="pixel-badge pixel-badge-locked">LEVEL {{ ch.level }} • 🔒 TERKUNCI</span>
+                            <span class="pixel-badge pixel-badge-violet">COMING SOON</span>
+                        </div>
+                        <h3 class="font-hud" style="color:var(--lavender-muted);font-size:1.02rem;margin-bottom:8px;">
+                            {{ ch.title }}
+                        </h3>
+                        <p style="color:var(--lavender-muted);font-size:0.88rem;line-height:1.55;">
+                            {{ ch.subtitle }}
+                        </p>
+                        <div class="chapter-points-box">
+                            <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap;font-size:0.78rem;color:var(--saffron);font-weight:700;">
+                                <span>🎯 Target: {{ ch.required_points }} Poin</span>
+                                <span>UNAVAILABLE</span>
+                            </div>
+                            {% if user.is_authenticated %}
+                            <div class="chapter-progress-track">
+                                <div class="chapter-progress-fill" style="width:{{ ch.progress_pct }}%;"></div>
+                            </div>
+                            <p style="font-size:0.78rem;color:var(--cream);margin:0;">
+                                Poin kamu: <strong>{{ user_total_points }} / {{ ch.required_points }}</strong> •
+                                {% if ch.points_remaining > 0 %}
+                                    Kurang {{ ch.points_remaining }} poin (~{{ ch.rounds_needed }} ronde Arena)
+                                {% else %}
+                                    ✓ Poin terpenuhi (Coming Soon / Unavailable)
+                                {% endif %}
+                            </p>
+                            {% else %}
+                            <p style="font-size:0.78rem;color:var(--lavender-muted);margin:6px 0 0;">
+                                Kumpulkan {{ ch.required_points }} poin di Arena Jawara (~{{ ch.rounds_needed }} ronde • Sign In dulu). Status: <strong>Coming Soon</strong>.
+                            </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="chapter-card-footer">
+                        <button type="button"
+                                class="pixel-btn pixel-btn-violet pixel-btn-wrap"
+                                data-open-locked="{{ ch.level }}"
+                                data-chapter-title="{{ ch.title }}"
+                                data-chapter-req="{{ ch.requirement }}"
+                                data-required-points="{{ ch.required_points }}"
+                                data-remaining-points="{{ ch.points_remaining }}"
+                                data-rounds-needed="{{ ch.rounds_needed }}"
+                                data-status-label="{{ ch.status_label }}"
+                                style="width:100%;">
+                            🔒 COMING SOON — DETAIL &amp; POIN
+                        </button>
+                    </div>
+                </article>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <div class="chapter-attribution">
+            <div style="flex:1;min-width:240px;">
+                <div class="font-hud" style="color:var(--saffron);font-size:0.84rem;margin-bottom:3px;">
+                    ✒️ SUMBER SASTRA KLASIK BETAWI
                 </div>
-                <h3 style="font-size: 16px; font-weight: 700; color: #FF9D3D; margin-bottom: 8px;">
-                    {{ feature.title }}
-                </h3>
-                <p style="font-size: 13px; color: #666; line-height: 1.4;">
-                    {{ feature.description }}
+                <p style="color:var(--lavender-muted);font-size:0.87rem;">
+                    <em>Hikayat Marakarma (Hikayat Si Miskin)</em> — gubahan <strong>Muhammad Bakir bin Syafian bin Usman bin Fadli</strong> beserta keluarga Fadli &amp; Sapirin (Guru Cit).
                 </p>
+            </div>
+            <a href="{% if user.is_authenticated %}/pustaka/{% else %}{% url 'login' %}?next=/pustaka/{% endif %}" class="pixel-btn pixel-btn-sm pixel-btn-green">
+                📚 Baca di Pustaka
+            </a>
+        </div>
+    </div>
+</section>
+
+<div class="pixel-seam" aria-hidden="true"></div>
+
+<!-- =========================================================
+     3. SYMMETRICAL 3x2 MENU FITUR + AI SPOTLIGHT + STATS
+     ========================================================= -->
+<section id="menu-fitur" class="features-hub-section">
+    <div class="home-container">
+        <div class="section-header-center">
+            <span class="pixel-badge pixel-badge-gold" style="margin-bottom:10px;">🎮 GERBANG FITUR GAMELOKA</span>
+            <h2 class="section-title-pixel">PILIH PETUALANGAN BELAJARMU</h2>
+            <p style="color:var(--cream);font-size:0.94rem;">
+                Disusun dari sumber primer &amp; sekunder Betawi berdasarkan Tiga Pilar Utama:
+            </p>
+        </div>
+
+        <div class="pillar-strip">
+            <span class="pixel-badge pixel-badge-green">🗣️ BAHASA</span>
+            <span class="pixel-badge pixel-badge-violet">🏛️ BUDAYA</span>
+            <span class="pixel-badge pixel-badge-gold">🎮 PERMAINAN</span>
+        </div>
+
+        <!-- Sign-In Status Bar -->
+        {% if user.is_authenticated %}
+        <div class="auth-gate-banner">
+            <div>
+                <div class="font-hud" style="color:var(--saffron);font-size:0.92rem;margin-bottom:3px;">
+                    ✓ HALO, {{ user.first_name|default:user.username|upper }}! SEMUA FITUR TERBUKA
+                </div>
+                <p style="color:var(--cream);font-size:0.87rem;">
+                    Pilih fitur di bawah untuk langsung berlatih, bermain, dan mengumpulkan skor jawara.
+                </p>
+            </div>
+            <a href="{% url 'profile' %}" class="pixel-btn pixel-btn-gold pixel-btn-sm">👤 Profil Saya</a>
+        </div>
+        {% else %}
+        <div class="auth-gate-banner">
+            <div>
+                <div class="font-hud" style="color:var(--saffron);font-size:0.92rem;margin-bottom:3px;">
+                    🔐 WAJIB SIGN IN UNTUK MENGAKSES FITUR
+                </div>
+                <p style="color:var(--cream);font-size:0.87rem;">
+                    Silakan <strong>Sign In</strong> atau <strong>Daftar</strong> terlebih dahulu untuk membuka 6 fitur utama &amp; Bang Buay Chatbot.
+                </p>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <a href="{% url 'login' %}" class="pixel-btn pixel-btn-gold pixel-btn-sm">🔑 Sign In</a>
+                <a href="{% url 'register' %}" class="pixel-btn pixel-btn-violet pixel-btn-sm">✨ Daftar Gratis</a>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Symmetrical 3x2 Feature Cards Grid -->
+        <div class="features-grid">
+            {% for feature in features %}
+            <article class="feature-pixel-card" data-feature-id="{{ feature.id }}">
+                <div class="feature-card-top">
+                    <span class="feature-step">NO. {{ feature.step }}</span>
+                    <span class="pixel-badge pixel-badge-violet">{{ feature.pillar }}</span>
+                </div>
+
+                <div class="feature-title-row">
+                    <div class="feature-icon-box">{{ feature.emoji }}</div>
+                    <h3 class="feature-title">{{ feature.title }}</h3>
+                </div>
+
+                <p class="feature-desc">{{ feature.description }}</p>
+
+                {% if feature.upcoming %}
+                <div class="feature-upcoming">
+                    ✨ Rima Betawi &amp; Peribahasa Kite • Segera
+                </div>
+                {% endif %}
+
+                <div class="feature-card-footer">
+                    {% if user.is_authenticated %}
+                    <a href="{{ feature.url }}" class="pixel-btn pixel-btn-gold pixel-btn-wrap" style="width:100%;">
+                        ▶ BUKA FITUR
+                    </a>
+                    {% else %}
+                    <a href="{% url 'login' %}?next={{ feature.url }}" class="pixel-btn pixel-btn-violet pixel-btn-wrap" style="width:100%;">
+                        🔒 SIGN IN
+                    </a>
+                    {% endif %}
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+
+        <!-- Featured Full-Width Card: Fitur Bang Buay Chatbot -->
+        <div class="ai-spotlight-card">
+            <div class="ai-spotlight-left">
+                <div class="ai-mascot-frame">
+                    <img src="{% static 'images/buaya.png' %}" alt="Bang Buay Chatbot" class="pixel-img" style="width:100%;height:100%;object-fit:contain;">
+                </div>
+                <div>
+                    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:5px;">
+                        <span class="pixel-badge pixel-badge-gold">NO. 07 • CHATBOT</span>
+                        <span class="pixel-badge pixel-badge-green">CHATBOT BAHASA &amp; BUDAYA BETAWI</span>
+                    </div>
+                    <h3 class="font-hud" style="color:var(--saffron);font-size:1.08rem;margin-bottom:4px;">
+                        Bang Buay Chatbot — Asisten Belajar Betawi
+                    </h3>
+                    <p style="color:var(--cream);font-size:0.9rem;line-height:1.5;">
+                        Tanya arti kosakata Betawi, buat pantun otomatis, latihan kuis adaptif, hingga diskusi <em>Hikayat Marakarma</em> langsung lewat Bang Buay Chatbot.
+                    </p>
+                </div>
+            </div>
+            <div>
+                {% if user.is_authenticated %}
+                <button type="button" id="openAiSpotlightBtn" class="pixel-btn pixel-btn-gold">
+                    💬 BUKA BANG BUAY CHATBOT
+                </button>
+                {% else %}
+                <a href="{% url 'login' %}?next=/" class="pixel-btn pixel-btn-gold">
+                    🔒 SIGN IN AKSES CHATBOT
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Symmetrical 4-Box Stats Grid -->
+        <div class="stats-grid">
+            {% for stat in stats %}
+            <div class="stat-pixel-box">
+                <div class="stat-pixel-num">{{ stat.count }}</div>
+                <div class="stat-pixel-label">{{ stat.label }}</div>
             </div>
             {% endfor %}
         </div>
     </div>
 </section>
 
-<!-- Call to Action Section -->
-<section style="background: linear-gradient(135deg, #FF9D3D 0%, #FFC400 100%); padding: 64px 24px; text-align: center;">
-    <div style="max-width: 800px; margin: 0 auto; color: white;">
-        <h2 style="font-size: 36px; font-weight: 800; margin-bottom: 16px;">
-            Siap Menjadi Jawara Betawi?
-        </h2>
-        <p style="font-size: 18px; margin-bottom: 32px; opacity: 0.95;">
-            Bergabunglah dengan ribuan pengguna yang sudah merasakan keseruan belajar bahasa Betawi
+<!-- Locked Chapter Modal (Level 2 & 3) -->
+<div id="lockedChapterModal" class="pixel-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="lockedModalTitle">
+    <div class="pixel-modal-box">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <span id="lockedModalBadge" class="pixel-badge pixel-badge-locked">🔒 BABAK TERKUNCI</span>
+            <button type="button" id="closeLockedModalBtn" class="pixel-btn pixel-btn-sm pixel-btn-danger">✕ TUTUP</button>
+        </div>
+        <h3 id="lockedModalTitle" class="font-hud" style="color:var(--saffron);font-size:1.15rem;margin-bottom:10px;">
+            Babak Lanjutan Terkunci
+        </h3>
+        <p id="lockedModalDesc" style="color:var(--cream);font-size:0.95rem;line-height:1.6;margin-bottom:18px;">
+            Kisah perjalanan Marakarma menghadapi fitnah ahli nujum hingga Pulau Raksasa menanti pada pembaruan babak selanjutnya.
         </p>
-        <button style="background: white; color: #FF9D3D; padding: 14px 40px; border: none; border-radius: 25px; font-weight: 700; font-size: 16px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-            Daftar Sekarang
-        </button>
+        <div class="pixel-panel-green" style="padding:14px;margin-bottom:18px;">
+            <div class="font-hud" style="color:var(--saffron);font-size:0.82rem;margin-bottom:6px;">
+                💡 SAMBIL MENUNGGU BABAK TERBUKA:
+            </div>
+            <p style="color:var(--cream);font-size:0.86rem;line-height:1.5;">
+                Latih penguasaan bahasa Betawi kamu melalui Kompas Belajar, kumpulkan poin di Arena Jawara, dan jelajahi Peta Budaya Jakarta!
+            </p>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <a href="{% if user.is_authenticated %}/arena/{% else %}{% url 'login' %}?next=/arena/{% endif %}" class="pixel-btn pixel-btn-sm pixel-btn-gold">⚡ Arena Jawara</a>
+            <a href="{% if user.is_authenticated %}/kompas/{% else %}{% url 'login' %}?next=/kompas/{% endif %}" class="pixel-btn pixel-btn-sm pixel-btn-green">🧭 Kompas Belajar</a>
+            <a href="{% if user.is_authenticated %}/peta/{% else %}{% url 'login' %}?next=/peta/{% endif %}" class="pixel-btn pixel-btn-sm pixel-btn-violet">🗺️ Peta Budaya</a>
+        </div>
     </div>
-</section>
+</div>
+{% endblock %}
 
+{% block extra_js %}
+<script src="{% static 'js/marakarma_cinema.js' %}?v=20261121v3"></script>
 <script>
-// Feature card navigation
-document.querySelectorAll('[data-feature-id]').forEach(card => {
-    card.addEventListener('click', function() {
-        const featureId = this.getAttribute('data-feature-id');
-        
-        // Map feature IDs to URLs
-        const featureRoutes = {
-            'kompas': '/kompas/',
-            'pustaka': '/pustaka/',
-            'arena': '/arena/',
-            'leaderboard': '/leaderboard/',
-            'cerita': '/cerita/',
-            'peta': '/peta/'
-        };
-        
-        if (featureRoutes[featureId]) {
-            window.location.href = featureRoutes[featureId];
-        }
-    });
-});
+document.addEventListener('DOMContentLoaded', function () {
+    // Bang Buay Chatbot spotlight button
+    var aiBtn = document.getElementById('openAiSpotlightBtn');
+    if (aiBtn) {
+        aiBtn.addEventListener('click', function () {
+            if (typeof window.openBangBuayChat === 'function') {
+                window.openBangBuayChat();
+            }
+        });
+    }
 
-// CTA button handlers
-document.querySelectorAll('button').forEach(btn => {
-    if (btn.textContent.includes('Daftar Sekarang')) {
-        btn.addEventListener('click', () => {
-            window.location.href = '/register/';
+    // Locked Level 2 & 3 Modal logic
+    var modal = document.getElementById('lockedChapterModal');
+    var closeBtn = document.getElementById('closeLockedModalBtn');
+    var titleEl = document.getElementById('lockedModalTitle');
+    var badgeEl = document.getElementById('lockedModalBadge');
+    var descEl = document.getElementById('lockedModalDesc');
+
+    function openLockedModal(level, customTitle, customReq, reqPoints, remPoints, roundsNeeded, statusLabel) {
+        if (!modal) return;
+        var st = statusLabel || 'COMING SOON / UNAVAILABLE';
+        if (badgeEl) badgeEl.textContent = '🔒 LEVEL ' + level + ' • ' + st;
+        if (titleEl) titleEl.textContent = customTitle || ('Bagian ' + level + ': Kisah Lanjutan Marakarma');
+        if (descEl) {
+            var base = customReq || 'Babak lanjutan Hikayat Marakarma saat ini belum tersedia (Coming Soon / Unavailable).';
+            if (reqPoints) {
+                base += ' • Kalkulasi Poin: butuh total ' + reqPoints + ' poin Arena';
+                if (remPoints !== '' && remPoints !== null && remPoints !== undefined) {
+                    var remNum = parseInt(remPoints, 10);
+                    if (!isNaN(remNum) && remNum > 0) {
+                        base += ' (kamu kurang ' + remNum + ' poin, sekitar ' + (roundsNeeded || 1) + ' ronde Arena Jawara).';
+                    } else if (remNum === 0) {
+                        base += ' (target poin kamu sudah terpenuhi — menunggu rilis babak!).';
+                    }
+                }
+            }
+            descEl.textContent = base;
+        }
+        modal.classList.add('show');
+    }
+
+    document.querySelectorAll('[data-open-locked]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var lvl = btn.getAttribute('data-open-locked') || '2';
+            var srcBtn = btn;
+            if (!btn.getAttribute('data-required-points')) {
+                var cardBtn = document.querySelector('.chapter-card [data-open-locked="' + lvl + '"]');
+                if (cardBtn) srcBtn = cardBtn;
+            }
+            openLockedModal(
+                lvl,
+                srcBtn.getAttribute('data-chapter-title') || '',
+                srcBtn.getAttribute('data-chapter-req') || '',
+                srcBtn.getAttribute('data-required-points') || '',
+                srcBtn.getAttribute('data-remaining-points') || '',
+                srcBtn.getAttribute('data-rounds-needed') || '',
+                srcBtn.getAttribute('data-status-label') || ''
+            );
+        });
+    });
+
+    if (closeBtn && modal) {
+        closeBtn.addEventListener('click', function () {
+            modal.classList.remove('show');
+        });
+        modal.addEventListener('click', function (e) {
+            if (e.target === modal) modal.classList.remove('show');
         });
     }
 });
-
-// Smooth scroll for anchor links
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function(e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            target.scrollIntoView({ behavior: 'smooth' });
-        }
-    });
-});
 </script>
-
 {% endblock %}

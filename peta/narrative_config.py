@@ -4,7 +4,7 @@
 NARRATIVE_STORY_CONFIGS = {
     'pitung': {
         'title': '🧢 Legenda Si Pitung',
-        'background': 'linear-gradient(135deg, #8B4513 0%, #D2B48C 100%)',
+        'background': 'linear-gradient(135deg, #2C263F 0%, #595082 55%, #213722 100%)',
         'npcs': [
             {
                 'id': 'pitung',
@@ -31,7 +31,7 @@ NARRATIVE_STORY_CONFIGS = {
     },
     'maknani': {
         'title': '👵 Kebijaksanaan Mak Nani',
-        'background': 'linear-gradient(135deg, #27AE60 0%, #F1C40F 100%)',
+        'background': 'linear-gradient(135deg, #213722 0%, #41644A 55%, #2C263F 100%)',
         'npcs': [
             {
                 'id': 'maknani',
@@ -58,7 +58,7 @@ NARRATIVE_STORY_CONFIGS = {
     },
     'kampung': {
         'title': '🎭 Sejarah Kemayoran',
-        'background': 'linear-gradient(135deg, #2980B9 0%, #F1C40F 100%)',
+        'background': 'linear-gradient(135deg, #2C263F 0%, #41644A 50%, #595082 100%)',
         'npcs': [
             {
                 'id': 'bang',

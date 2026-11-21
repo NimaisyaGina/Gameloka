@@ -23,15 +23,10 @@ const VABubble: React.FC<VABubbleProps> = ({ isAuthenticated }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [attachedFile, setAttachedFile] = useState<{ url: string; data: string; mimeType: string } | null>(null);
-  
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const recognitionRef = useRef<any>(null);
-
-  // Jika tidak authenticated, jangan render
-  if (!isAuthenticated) {
-    return null;
-  }
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -41,7 +36,6 @@ const VABubble: React.FC<VABubbleProps> = ({ isAuthenticated }) => {
     scrollToBottom();
   }, [messages, scrollToBottom]);
 
-  // Speech Recognition Setup
   useEffect(() => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (SpeechRecognition) {
@@ -66,6 +60,11 @@ const VABubble: React.FC<VABubbleProps> = ({ isAuthenticated }) => {
       };
     }
   }, []);
+
+  // Must run after all hooks to obey React Rules of Hooks
+  if (!isAuthenticated) {
+    return null;
+  }
 
   const toggleRecording = () => {
     if (isRecording) {
@@ -111,11 +110,11 @@ const VABubble: React.FC<VABubbleProps> = ({ isAuthenticated }) => {
     setIsLoading(true);
 
     try {
-      let response;
+      let response: string;
       if (attachedFile) {
         const fileData: FileData = {
           data: attachedFile.data,
-          mimeType: attachedFile.mimeType as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp' | 'application/pdf' | 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' | 'text/plain'
+          mimeType: attachedFile.mimeType as FileData['mimeType']
         };
         response = await geminiService.sendMessageWithFile(inputText || "Tolong analisis file ini", fileData);
       } else {
@@ -144,11 +143,7 @@ const VABubble: React.FC<VABubbleProps> = ({ isAuthenticated }) => {
     }
   };
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
-
-  const loadConversation = (id: string) => {
+  const handleNewChat = () => {
     setMessages([
       {
         id: 'welcome',
@@ -162,105 +157,82 @@ const VABubble: React.FC<VABubbleProps> = ({ isAuthenticated }) => {
 
   return (
     <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 999 }}>
-      {/* Chat Bubble Button */}
       {!isOpen ? (
         <button
           onClick={() => setIsOpen(true)}
           style={{
             width: '64px',
             height: '64px',
-            borderRadius: '50%',
-            background: 'linear-gradient(135deg, #FF9D3D 0%, #FFB366 100%)',
-            border: 'none',
+            background: '#F8C662',
+            color: '#2C263F',
+            border: '3px solid #2C263F',
             cursor: 'pointer',
-            boxShadow: '0 4px 12px rgba(255, 157, 61, 0.3)',
+            boxShadow: '4px 4px 0 #1B1729',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: '32px',
-            transition: 'all 0.3s ease',
-            transform: 'scale(1)',
-            animation: 'pulse 2s infinite'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'scale(1.1)';
-            e.currentTarget.style.boxShadow = '0 6px 16px rgba(255, 157, 61, 0.4)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'scale(1)';
-            e.currentTarget.style.boxShadow = '0 4px 12px rgba(255, 157, 61, 0.3)';
+            fontSize: '28px',
           }}
           title="Chat dengan Bang Buay"
         >
           💬
         </button>
       ) : (
-        /* Chat Window */
         <div
           style={{
-            width: '450px',
-            height: '600px',
-            background: 'white',
-            borderRadius: '12px',
-            boxShadow: '0 5px 30px rgba(0, 0, 0, 0.2)',
+            width: '440px',
+            height: '580px',
+            background: '#2C263F',
+            border: '4px solid #F8C662',
+            boxShadow: '6px 6px 0 #1B1729',
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
-            animation: 'slideUp 0.3s ease'
           }}
         >
-          {/* Header */}
           <div
             style={{
-              background: 'linear-gradient(135deg, #FF9D3D 0%, #FFB366 100%)',
-              color: 'white',
-              padding: '16px',
+              background: '#595082',
+              color: '#FFF7E0',
+              padding: '14px 16px',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              borderBottom: '1px solid rgba(255, 157, 61, 0.2)'
+              borderBottom: '3px solid #F8C662'
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '24px' }}>💬</span>
+              <span style={{ fontSize: '22px' }}>🐊</span>
               <div>
-                <div style={{ fontWeight: '700', fontSize: '16px' }}>Bang Buay</div>
-                <div style={{ fontSize: '12px', opacity: 0.9 }}>Virtual Assistant Betawi</div>
+                <div style={{ fontWeight: '700', fontSize: '15px', color: '#F8C662' }}>Bang Buay</div>
+                <div style={{ fontSize: '12px', color: '#C7C0DE' }}>Virtual Assistant Betawi</div>
               </div>
             </div>
             <div style={{ display: 'flex', gap: '8px' }}>
               <button
-                onClick={toggleSidebar}
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
                 style={{
-                  background: 'rgba(255, 255, 255, 0.2)',
-                  border: 'none',
-                  color: 'white',
-                  padding: '8px',
-                  borderRadius: '6px',
+                  background: '#2C263F',
+                  border: '2px solid #F8C662',
+                  color: '#F8C662',
+                  padding: '6px 10px',
                   cursor: 'pointer',
-                  fontSize: '18px',
-                  transition: 'background 0.2s'
+                  fontSize: '16px',
                 }}
-                onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.3)'}
-                onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)'}
-                title="Riwayat chat"
+                title="Topik Cepat"
               >
                 ≡
               </button>
               <button
                 onClick={() => setIsOpen(false)}
                 style={{
-                  background: 'rgba(255, 255, 255, 0.2)',
-                  border: 'none',
-                  color: 'white',
-                  padding: '8px 12px',
-                  borderRadius: '6px',
+                  background: '#2C263F',
+                  border: '2px solid #F8C662',
+                  color: '#F8C662',
+                  padding: '6px 10px',
                   cursor: 'pointer',
-                  fontSize: '18px',
-                  transition: 'background 0.2s'
+                  fontSize: '16px',
                 }}
-                onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.3)'}
-                onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)'}
                 title="Tutup chat"
               >
                 ×
@@ -268,7 +240,6 @@ const VABubble: React.FC<VABubbleProps> = ({ isAuthenticated }) => {
             </div>
           </div>
 
-          {/* Messages Area */}
           <div
             style={{
               flex: 1,
@@ -280,86 +251,39 @@ const VABubble: React.FC<VABubbleProps> = ({ isAuthenticated }) => {
             }}
           >
             {messages.map((msg) => (
-              <ChatBubble
-                key={msg.id}
-                message={msg}
-                isUser={msg.role === Role.USER}
-              />
+              <ChatBubble key={msg.id} message={msg} />
             ))}
             {isLoading && (
-              <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '8px' }}>
-                <div
-                  style={{
-                    width: '12px',
-                    height: '12px',
-                    borderRadius: '50%',
-                    background: '#FF9D3D',
-                    animation: 'bounce 1.4s infinite'
-                  }}
-                ></div>
-                <div
-                  style={{
-                    width: '12px',
-                    height: '12px',
-                    borderRadius: '50%',
-                    background: '#FF9D3D',
-                    animation: 'bounce 1.4s infinite',
-                    animationDelay: '0.2s'
-                  }}
-                ></div>
-                <div
-                  style={{
-                    width: '12px',
-                    height: '12px',
-                    borderRadius: '50%',
-                    background: '#FF9D3D',
-                    animation: 'bounce 1.4s infinite',
-                    animationDelay: '0.4s'
-                  }}
-                ></div>
-              </div>
+              <div style={{ color: '#F8C662', fontSize: '13px' }}>⏳ Bang Buay lagi mikir...</div>
             )}
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input Area */}
-          <div style={{ padding: '12px', borderTop: '1px solid #e0e0e0' }}>
+          <div style={{ padding: '12px', borderTop: '2px solid #595082', background: '#1B1729' }}>
             {attachedFile && (
               <div
                 style={{
-                  marginBottom: '12px',
+                  marginBottom: '10px',
                   padding: '8px',
-                  background: '#f0f0f0',
-                  borderRadius: '6px',
+                  background: '#213722',
+                  border: '2px solid #41644A',
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
-                  fontSize: '12px'
+                  fontSize: '12px',
+                  color: '#FFF7E0'
                 }}
               >
                 <span>📎 File attached</span>
                 <button
                   onClick={() => setAttachedFile(null)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontSize: '16px',
-                    color: '#666'
-                  }}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px', color: '#F8C662' }}
                 >
                   ×
                 </button>
               </div>
             )}
-            <form
-              onSubmit={handleSendMessage}
-              style={{
-                display: 'flex',
-                gap: '8px',
-                alignItems: 'flex-end'
-              }}
-            >
+            <form onSubmit={handleSendMessage} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
               <input
                 type="file"
                 ref={fileInputRef}
@@ -370,17 +294,7 @@ const VABubble: React.FC<VABubbleProps> = ({ isAuthenticated }) => {
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                style={{
-                  background: '#f0f0f0',
-                  border: 'none',
-                  padding: '8px 12px',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  fontSize: '18px',
-                  transition: 'background 0.2s'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.background = '#e0e0e0'}
-                onMouseLeave={(e) => e.currentTarget.style.background = '#f0f0f0'}
+                style={{ background: '#595082', border: '2px solid #F8C662', color: '#FFF7E0', padding: '8px 10px', cursor: 'pointer' }}
                 title="Upload file"
               >
                 📎
@@ -389,20 +303,11 @@ const VABubble: React.FC<VABubbleProps> = ({ isAuthenticated }) => {
                 type="button"
                 onClick={toggleRecording}
                 style={{
-                  background: isRecording ? '#FF6B6B' : '#f0f0f0',
-                  border: 'none',
-                  padding: '8px 12px',
-                  borderRadius: '6px',
+                  background: isRecording ? '#E05A5A' : '#595082',
+                  border: '2px solid #F8C662',
+                  padding: '8px 10px',
                   cursor: 'pointer',
-                  fontSize: '18px',
-                  color: isRecording ? 'white' : 'inherit',
-                  transition: 'all 0.2s'
-                }}
-                onMouseEnter={(e) => {
-                  if (!isRecording) e.currentTarget.style.background = '#e0e0e0';
-                }}
-                onMouseLeave={(e) => {
-                  if (!isRecording) e.currentTarget.style.background = '#f0f0f0';
+                  color: '#FFF7E0'
                 }}
                 title={isRecording ? 'Stop recording' : 'Record voice'}
               >
@@ -415,40 +320,25 @@ const VABubble: React.FC<VABubbleProps> = ({ isAuthenticated }) => {
                 placeholder="Ketik pesan..."
                 style={{
                   flex: 1,
-                  padding: '10px 12px',
-                  border: '1px solid #ddd',
-                  borderRadius: '6px',
+                  padding: '9px 12px',
+                  border: '2px solid #595082',
+                  background: '#2C263F',
+                  color: '#FFF7E0',
                   fontSize: '14px',
-                  fontFamily: 'inherit',
-                  outline: 'none',
-                  transition: 'border-color 0.2s'
+                  outline: 'none'
                 }}
-                onFocus={(e) => e.currentTarget.style.borderColor = '#FF9D3D'}
-                onBlur={(e) => e.currentTarget.style.borderColor = '#ddd'}
                 disabled={isLoading}
               />
               <button
                 type="submit"
                 disabled={isLoading || (!inputText.trim() && !attachedFile)}
                 style={{
-                  background: isLoading || (!inputText.trim() && !attachedFile) ? '#ccc' : '#FF9D3D',
-                  color: 'white',
-                  border: 'none',
-                  padding: '10px 16px',
-                  borderRadius: '6px',
-                  cursor: isLoading || (!inputText.trim() && !attachedFile) ? 'not-allowed' : 'pointer',
-                  fontWeight: '600',
-                  transition: 'all 0.2s'
-                }}
-                onMouseEnter={(e) => {
-                  if (!isLoading && (inputText.trim() || attachedFile)) {
-                    e.currentTarget.style.background = '#FF8C1A';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isLoading && (inputText.trim() || attachedFile)) {
-                    e.currentTarget.style.background = '#FF9D3D';
-                  }
+                  background: '#F8C662',
+                  color: '#2C263F',
+                  border: '2px solid #C9932E',
+                  padding: '9px 14px',
+                  cursor: 'pointer',
+                  fontWeight: '700'
                 }}
               >
                 {isLoading ? '...' : '→'}
@@ -458,41 +348,9 @@ const VABubble: React.FC<VABubbleProps> = ({ isAuthenticated }) => {
         </div>
       )}
 
-      {/* Sidebar */}
       {isSidebarOpen && (
-        <Sidebar onSelectConversation={loadConversation} onClose={toggleSidebar} />
+        <Sidebar onNewChat={handleNewChat} isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
       )}
-
-      <style>{`
-        @keyframes pulse {
-          0%, 100% {
-            opacity: 1;
-          }
-          50% {
-            opacity: 0.7;
-          }
-        }
-
-        @keyframes bounce {
-          0%, 80%, 100% {
-            opacity: 0.5;
-          }
-          40% {
-            opacity: 1;
-          }
-        }
-
-        @keyframes slideUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
     </div>
   );
 };

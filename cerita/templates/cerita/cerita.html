@@ -1,0 +1,335 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Cerita Kami - Komunitas Gameloka 8-Bit{% endblock %}
+
+{% block page_badge %}💬 CERITA KAMI{% endblock %}
+
+{% block extra_css %}
+<style>
+    .cerita-grid {
+        display: grid;
+        grid-template-columns: 360px 1fr;
+        gap: 24px;
+        align-items: start;
+    }
+
+    .cerita-composer {
+        position: sticky;
+        top: 86px;
+        padding: 22px;
+    }
+
+    .cerita-filter-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+    }
+
+    .cerita-chip {
+        font-family: var(--font-hud);
+        font-size: 0.76rem;
+        padding: 7px 12px;
+        background: var(--dark-purple);
+        color: var(--lavender-muted);
+        border: 2px solid var(--ultra-violet);
+        cursor: pointer;
+    }
+
+    .cerita-chip.active {
+        background: var(--saffron);
+        color: var(--dark-purple-deep);
+        border-color: var(--saffron-dark);
+        font-weight: 700;
+    }
+
+    .cerita-post-card {
+        background: var(--dark-purple-deep);
+        border: 3px solid var(--ultra-violet);
+        box-shadow: 5px 5px 0 #110d1b;
+        padding: 20px;
+        margin-bottom: 16px;
+    }
+
+    .cerita-post-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+    }
+
+    .cerita-like-btn {
+        font-family: var(--font-hud);
+        font-size: 0.78rem;
+        padding: 6px 12px;
+        background: var(--dark-purple);
+        color: var(--cream);
+        border: 2px solid var(--ultra-violet);
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .cerita-like-btn.liked {
+        background: var(--dark-green);
+        border-color: var(--saffron);
+        color: var(--saffron);
+    }
+
+    @media (max-width: 900px) {
+        .cerita-grid {
+            grid-template-columns: 1fr;
+        }
+        .cerita-composer {
+            position: static;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="pixel-page">
+    <div class="pixel-container">
+        <div style="text-align:center;margin-bottom:28px;">
+            <span class="pixel-badge pixel-badge-violet" style="margin-bottom:10px;">KOMUNITAS LINTAS BUDAYA</span>
+            <h1 class="font-pixel" style="color:var(--saffron);font-size:clamp(1.1rem,2.4vw,1.6rem);margin-bottom:8px;">
+                CERITA KAMI
+            </h1>
+            <p style="color:var(--lavender-muted);font-size:0.95rem;">
+                Bagikan pengalaman belajarmu, kosakata favorit, refleksi budaya Betawi, atau kreasi pantun bersama komunitas Gameloka!
+            </p>
+        </div>
+
+        <div class="cerita-grid">
+            <!-- Composer -->
+            <aside class="pixel-panel-gold cerita-composer">
+                <h2 class="font-hud" style="color:var(--saffron);font-size:1.05rem;margin-bottom:14px;">
+                    ✍️ TULIS CERITAMU
+                </h2>
+
+                <form id="ceritaForm" style="display:flex;flex-direction:column;gap:14px;">
+                    <div>
+                        <label for="postTitle" class="font-hud" style="display:block;font-size:0.78rem;color:var(--saffron);margin-bottom:6px;">
+                            Judul Cerita
+                        </label>
+                        <input type="text" id="postTitle" class="pixel-input" placeholder="Misal: Pengalaman main Arena Jawara..." maxlength="160" required>
+                    </div>
+
+                    <div>
+                        <label for="postCategory" class="font-hud" style="display:block;font-size:0.78rem;color:var(--saffron);margin-bottom:6px;">
+                            Kategori
+                        </label>
+                        <select id="postCategory" class="pixel-select">
+                            {% for val, label in categories %}
+                            <option value="{{ val }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="postContent" class="font-hud" style="display:block;font-size:0.78rem;color:var(--saffron);margin-bottom:6px;">
+                            Isi Cerita / Pantun
+                        </label>
+                        <textarea id="postContent" class="pixel-textarea" rows="5" placeholder="Ceritakan pengalaman belajarmu atau tulis pantun Betawi di sini..." required></textarea>
+                    </div>
+
+                    <button type="submit" id="publishBtn" class="pixel-btn pixel-btn-gold" style="width:100%;">
+                        🚀 PUBLIKASIKAN CERITA
+                    </button>
+                </form>
+
+                <div id="composerAlert" style="margin-top:12px;font-size:0.84rem;min-height:20px;"></div>
+            </aside>
+
+            <!-- Feed -->
+            <section>
+                <div class="cerita-filter-row" id="ceritaFilters">
+                    <button type="button" class="cerita-chip active" data-cat="semua">🌟 Semua Cerita</button>
+                    {% for val, label in categories %}
+                    <button type="button" class="cerita-chip" data-cat="{{ val }}">{{ label }}</button>
+                    {% endfor %}
+                </div>
+
+                <div id="ceritaFeed"></div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<script id="cerita-posts-data" type="application/json">{{ posts_json|safe }}</script>
+
+<script>
+let allPosts = [];
+let activeCategory = 'semua';
+
+function getCsrfToken() {
+    const meta = document.querySelector('meta[name="csrf-token"]');
+    if (meta && meta.content && meta.content !== 'NOTPROVIDED') return meta.content;
+    const m = document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/);
+    return m ? decodeURIComponent(m[1]) : '';
+}
+
+function loadInitialPosts() {
+    const el = document.getElementById('cerita-posts-data');
+    if (!el || !el.textContent.trim()) return;
+    try {
+        allPosts = JSON.parse(el.textContent);
+    } catch (e) {
+        allPosts = [];
+    }
+}
+
+function renderPosts() {
+    const feed = document.getElementById('ceritaFeed');
+    feed.innerHTML = '';
+
+    const visible = activeCategory === 'semua'
+        ? allPosts
+        : allPosts.filter(p => p.category === activeCategory);
+
+    if (visible.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'pixel-panel';
+        empty.style.cssText = 'padding:28px;text-align:center;color:var(--lavender-muted);';
+        empty.textContent = 'Belum ada cerita pada kategori ini. Jadilah yang pertama berbagi!';
+        feed.appendChild(empty);
+        return;
+    }
+
+    visible.forEach(post => {
+        const card = document.createElement('article');
+        card.className = 'cerita-post-card';
+
+        const header = document.createElement('div');
+        header.className = 'cerita-post-header';
+
+        const metaLeft = document.createElement('div');
+        const badge = document.createElement('span');
+        badge.className = 'pixel-badge pixel-badge-green';
+        badge.textContent = post.category_label;
+
+        const title = document.createElement('h3');
+        title.className = 'font-hud';
+        title.style.cssText = 'color:var(--saffron);font-size:1.05rem;margin-top:8px;';
+        title.textContent = post.title;
+
+        metaLeft.appendChild(badge);
+        metaLeft.appendChild(title);
+
+        const likeBtn = document.createElement('button');
+        likeBtn.type = 'button';
+        likeBtn.className = 'cerita-like-btn' + (post.liked ? ' liked' : '');
+        likeBtn.textContent = (post.liked ? '❤️ ' : '🤍 ') + post.likes_count;
+        likeBtn.onclick = () => toggleLikePost(post.id);
+
+        header.appendChild(metaLeft);
+        header.appendChild(likeBtn);
+
+        const body = document.createElement('p');
+        body.style.cssText = 'color:var(--cream);font-size:0.94rem;line-height:1.65;white-space:pre-line;margin-bottom:14px;';
+        body.textContent = post.content;
+
+        const footer = document.createElement('div');
+        footer.style.cssText = 'padding-top:10px;border-top:2px solid var(--ultra-violet);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:0.8rem;color:var(--lavender-muted);';
+
+        const authorEl = document.createElement('span');
+        authorEl.textContent = '👤 ' + post.author + ' (@' + post.username + ')';
+
+        const timeEl = document.createElement('span');
+        timeEl.textContent = '🕒 ' + post.created_at;
+
+        footer.appendChild(authorEl);
+        footer.appendChild(timeEl);
+
+        card.appendChild(header);
+        card.appendChild(body);
+        card.appendChild(footer);
+        feed.appendChild(card);
+    });
+}
+
+async function toggleLikePost(postId) {
+    try {
+        const resp = await fetch(`/cerita/api/posts/${postId}/like/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCsrfToken()
+            }
+        });
+        const data = await resp.json();
+        if (resp.ok && data.status === 'success') {
+            const target = allPosts.find(p => p.id === postId);
+            if (target) {
+                target.liked = data.liked;
+                target.likes_count = data.likes_count;
+                renderPosts();
+            }
+        }
+    } catch (e) {
+        console.error('Error toggling like:', e);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadInitialPosts();
+    renderPosts();
+
+    document.querySelectorAll('#ceritaFilters .cerita-chip').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('#ceritaFilters .cerita-chip').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            activeCategory = btn.getAttribute('data-cat') || 'semua';
+            renderPosts();
+        });
+    });
+
+    const form = document.getElementById('ceritaForm');
+    const publishBtn = document.getElementById('publishBtn');
+    const alertEl = document.getElementById('composerAlert');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const title = document.getElementById('postTitle').value.trim();
+        const category = document.getElementById('postCategory').value;
+        const content = document.getElementById('postContent').value.trim();
+
+        if (!title || !content) return;
+
+        publishBtn.disabled = true;
+        alertEl.textContent = '⏳ Mempublikasikan cerita...';
+        alertEl.style.color = 'var(--saffron)';
+
+        try {
+            const resp = await fetch('/cerita/api/posts/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCsrfToken()
+                },
+                body: JSON.stringify({ title, category, content })
+            });
+            const data = await resp.json();
+            if (resp.ok && data.status === 'success' && data.post) {
+                allPosts.unshift(data.post);
+                form.reset();
+                renderPosts();
+                alertEl.textContent = '✓ ' + data.message;
+                alertEl.style.color = 'var(--saffron)';
+            } else {
+                alertEl.textContent = '✗ ' + (data.message || 'Gagal mempublikasikan cerita');
+                alertEl.style.color = 'var(--danger)';
+            }
+        } catch (err) {
+            alertEl.textContent = '✗ Terjadi kesalahan koneksi.';
+            alertEl.style.color = 'var(--danger)';
+        } finally {
+            publishBtn.disabled = false;
+        }
+    });
+});
+</script>
+{% endblock %}

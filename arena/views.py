@@ -1,25 +1,24 @@
-from django.shortcuts import render
 from django.views.generic import TemplateView
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from django.utils.safestring import mark_safe
-from django.contrib.auth.models import User
 import json
-import random
-from datetime import datetime
 
 
+@method_decorator(login_required, name='dispatch')
 class ArenaJawaraView(TemplateView):
     """View untuk menampilkan Arena Jawara"""
     template_name = 'arena/arena.html'
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         questions = self.get_questions()
         context['questions'] = mark_safe(json.dumps(questions))
         return context
-    
+
     def get_questions(self):
         """Get all questions for Arena Jawara"""
         questions = [
@@ -91,52 +90,39 @@ class ArenaJawaraView(TemplateView):
 @csrf_exempt
 def save_score_api(request):
     """API endpoint untuk menyimpan score ke leaderboard"""
+    if not request.user.is_authenticated:
+        return JsonResponse({
+            'status': 'not_authenticated',
+            'message': 'Login untuk menyimpan skor ke leaderboard',
+        }, status=401)
+
     try:
         data = json.loads(request.body)
-        score = data.get('score', 0)
-        user_id = data.get('user_id')
-        
-        # Jika user_id dikirim dan user authenticated
-        if user_id and request.user.is_authenticated:
-            from leaderboard.models import LeaderboardEntry
-            entry = LeaderboardEntry.objects.create(
-                user=request.user,
-                score=int(score),
-                game_type='Arena Jawara'
-            )
-            
-            return JsonResponse({
-                'status': 'success',
-                'message': 'Score saved to leaderboard',
-                'score': score,
-                'leaderboard_entry_id': entry.id
-            })
-        elif request.user.is_authenticated:
-            # User authenticated tapi tidak ada user_id di request
-            from leaderboard.models import LeaderboardEntry
-            entry = LeaderboardEntry.objects.create(
-                user=request.user,
-                score=int(score),
-                game_type='Arena Jawara'
-            )
-            
-            return JsonResponse({
-                'status': 'success',
-                'message': 'Score saved to leaderboard',
-                'score': score,
-                'leaderboard_entry_id': entry.id
-            })
-        else:
-            # User belum login
-            return JsonResponse({
-                'status': 'not_authenticated',
-                'message': 'Login untuk menyimpan skor ke leaderboard',
-                'score': score
-            }, status=401)
+        raw_score = data.get('score', 0)
+        score = max(0, min(100, int(raw_score)))
+
+        from leaderboard.models import LeaderboardEntry
+        entry = LeaderboardEntry.objects.create(
+            user=request.user,
+            score=score,
+            game_type='Arena Jawara'
+        )
+
+        return JsonResponse({
+            'status': 'success',
+            'message': 'Score saved to leaderboard',
+            'score': score,
+            'leaderboard_entry_id': entry.id
+        })
     except json.JSONDecodeError:
         return JsonResponse({
             'status': 'error',
             'message': 'Invalid JSON format'
+        }, status=400)
+    except (TypeError, ValueError) as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': f'Invalid score value: {str(e)}'
         }, status=400)
     except Exception as e:
         return JsonResponse({
@@ -147,4 +133,3 @@ def save_score_api(request):
 
 # Alias untuk kompatibilitas
 arena_view = ArenaJawaraView.as_view()
-

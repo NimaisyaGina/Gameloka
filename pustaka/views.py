@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
+from django.contrib.auth.decorators import login_required
 from django.utils.safestring import mark_safe
 import json
 
@@ -77,10 +78,17 @@ ARTICLES = [
         'title': 'Rumah Kebaya: Arsitektur Betawi',
         'content': 'Rumah Kebaya adalah arsitektur rumah khas Betawi yang atapnya menyerupai pelana yang dilipat seperti kebaya. Rumah ini memiliki teras luas yang disebut "paseban" untuk menerima tamu. Dindingnya sering dihiasi dengan ukiran dan warna-warna cerah. Rumah kebaya mencerminkan kehidupan sosial masyarakat Betawi yang terbuka.',
         'category': 'Sejarah'
+    },
+    {
+        'id': '13',
+        'title': 'Hikayat Marakarma: Sastra Klasik Betawi Karya Muhammad Bakir',
+        'content': 'Hikayat Marakarma (dikenal juga sebagai Hikayat Si Miskin) adalah mahakarya sastra tulis Melayu klasik Betawi yang disalin dan digubah oleh Muhammad Bakir bin Syafian bin Usman bin Fadli dari keluarga Fadli di Batavia abad ke-19. Kisah ini mengisahkan ketabahan pasangan Si Miskin yang tertimpa sumpah hingga melahirkan Marakarma dan mendirikan Kerajaan Puspa Sari, sarat nilai ketabahan, keadilan, dan budi bahasa.',
+        'category': 'Sejarah'
     }
 ]
 
 
+@login_required
 def pustaka_view(request):
     """View untuk halaman Pustaka Belajar"""
     context = {
@@ -92,6 +100,12 @@ def pustaka_view(request):
 @require_http_methods(["GET"])
 def get_article_detail(request):
     """API endpoint untuk mendapatkan detail artikel"""
+    if not request.user.is_authenticated:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Authentication required'
+        }, status=401)
+
     article_id = request.GET.get('id')
     
     for article in ARTICLES:

@@ -5,159 +5,134 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token }}">
-    <title>{% block title %}Gameloka{% endblock %}</title>
-    <link href="https://cdn.tailwindcss.com" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/home.css' %}">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-        }
-    </style>
+    <title>{% block title %}Gameloka - 8-Bit Bahasa & Budaya Betawi{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Silkscreen:wght@400;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/pixel_theme.css' %}?v=20261121v3">
     {% block extra_css %}{% endblock %}
 </head>
-<body class="bg-white">
-    <nav style="background: white; border-bottom: 2px solid #FF9D3D; position: sticky; top: 0; z-index: 40;">
-        <div style="max-width: 1280px; margin: 0 auto; padding: 0 24px;">
-            <div style="display: flex; align-items: center; justify-content: center; height: 64px; gap: 32px;">
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <img src="{% static 'images/logo.png' %}" alt="Gameloka Logo" style="width: 48px; height: 48px; object-fit: contain;">
-                    <span style="font-size: 18px; font-weight: 700; color: #FF9D3D;">Gameloka</span>
-                </div>
+<body>
+    <nav class="pixel-nav" aria-label="Navigasi Utama Gameloka">
+        <div class="pixel-nav-inner">
+            <a href="/" class="pixel-brand">
+                <img src="{% static 'images/logo.png' %}" alt="Gameloka Logo" class="pixel-brand-logo pixel-img">
+                <span class="pixel-brand-text">GAMELOKA</span>
+            </a>
 
-    
-                <div style="display: flex; gap: 8px; align-items: center;">
-                    <a href="#beranda" style="background: #FF9D3D; color: white; padding: 10px 18px; text-decoration: none; font-weight: 600; font-size: 0.8rem; display: flex; align-items: center; gap: 5px; transition: all 0.3s; white-space: nowrap; border-radius: 4px;">
-                        📍 Beranda
-                    </a>
-                    <a href="/arena/" style="color: #333; padding: 10px 16px; text-decoration: none; font-weight: 500; font-size: 0.8rem; display: flex; align-items: center; gap: 5px; transition: color 0.3s; white-space: nowrap;" onmouseover="this.style.color='#FF9D3D'" onmouseout="this.style.color='#333'">
-                        ⚡ Arena
-                    </a>
-                    <a href="/leaderboard/" style="color: #333; padding: 10px 16px; text-decoration: none; font-weight: 500; font-size: 0.8rem; display: flex; align-items: center; gap: 5px; transition: color 0.3s; white-space: nowrap;" onmouseover="this.style.color='#FF9D3D'" onmouseout="this.style.color='#333'">
-                        🏆 Board
-                    </a>
-                    <a href="/kompas/" style="color: #333; padding: 10px 16px; text-decoration: none; font-weight: 500; font-size: 0.8rem; display: flex; align-items: center; gap: 5px; transition: color 0.3s; white-space: nowrap;" onmouseover="this.style.color='#FF9D3D'" onmouseout="this.style.color='#333'">
-                        🧭 Kompas
-                    </a>
-                    <a href="/pustaka/" style="color: #333; padding: 10px 16px; text-decoration: none; font-weight: 500; font-size: 0.8rem; display: flex; align-items: center; gap: 5px; transition: color 0.3s; white-space: nowrap;" onmouseover="this.style.color='#FF9D3D'" onmouseout="this.style.color='#333'">
-                        📚 Pustaka
-                    </a>
-                    <a href="/peta/" style="color: #333; padding: 10px 16px; text-decoration: none; font-weight: 500; font-size: 0.8rem; display: flex; align-items: center; gap: 5px; transition: color 0.3s; white-space: nowrap;" onmouseover="this.style.color='#FF9D3D'" onmouseout="this.style.color='#333'">
-                        🌍 Peta
-                    </a>
-                    <a href="#cerita" style="color: #333; padding: 10px 16px; text-decoration: none; font-weight: 500; font-size: 0.8rem; display: flex; align-items: center; gap: 5px; transition: color 0.3s; white-space: nowrap;" onmouseover="this.style.color='#FF9D3D'" onmouseout="this.style.color='#333'">
-                        💬 Cerita
-                    </a>
-                    
-                    <div style="margin-left: 16px; padding-left: 16px; border-left: 1px solid #e0e0e0; display: flex; gap: 8px; align-items: center;">
-                        {% if user.is_authenticated %}
-                            <span style="color: #333; padding: 10px 16px; text-decoration: none; font-weight: 500; font-size: 0.8rem; display: flex; align-items: center; gap: 5px; white-space: nowrap;">
-                                👤 {{ user.first_name|default:user.username }}
-                            </span>
-                            <a href="{% url 'logout' %}" style="background: #C0392B; color: white; padding: 8px 16px; text-decoration: none; font-weight: 600; font-size: 0.75rem; display: flex; align-items: center; gap: 5px; transition: all 0.3s; white-space: nowrap; border-radius: 4px;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
-                                Logout
-                            </a>
-                        {% else %}
-                            <a href="{% url 'login' %}" style="background: #FF9D3D; color: white; padding: 8px 16px; text-decoration: none; font-weight: 600; font-size: 0.75rem; display: flex; align-items: center; gap: 5px; transition: all 0.3s; white-space: nowrap; border-radius: 4px;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
-                                Sign In
-                            </a>
-                        {% endif %}
-                    </div>
-                </div>
+            <div class="pixel-nav-links">
+                <a href="/" class="pixel-nav-link {% if request.path == '/' %}active{% endif %}">🏠 Beranda</a>
+                <a href="/arena/" class="pixel-nav-link {% if '/arena' in request.path %}active{% endif %}">⚡ Arena</a>
+                <a href="/leaderboard/" class="pixel-nav-link {% if '/leaderboard' in request.path %}active{% endif %}">🏆 Board</a>
+                <a href="/kompas/" class="pixel-nav-link {% if '/kompas' in request.path %}active{% endif %}">🧭 Kompas</a>
+                <a href="/pustaka/" class="pixel-nav-link {% if '/pustaka' in request.path %}active{% endif %}">📚 Pustaka</a>
+                <a href="/peta/" class="pixel-nav-link {% if '/peta' in request.path %}active{% endif %}">🗺️ Peta</a>
+                <a href="/cerita/" class="pixel-nav-link {% if '/cerita' in request.path %}active{% endif %}">💬 Cerita</a>
+            </div>
 
-        
-                <button id="mobile-menu-btn" style="display: none; background: transparent; border: none; padding: 8px; cursor: pointer; align-items: center; justify-content: center;">
-                    <svg style="color: #FF9D3D; width: 24px; height: 24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                    </svg>
-                </button>
+            <div class="pixel-nav-auth">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'profile' %}" class="pixel-user-pill" title="Profil Jawara">
+                        👤 {{ user.first_name|default:user.username }}
+                    </a>
+                    <a href="{% url 'logout' %}" class="pixel-btn pixel-btn-sm pixel-btn-danger">
+                        Keluar
+                    </a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="pixel-btn pixel-btn-sm pixel-btn-gold">
+                        🔑 Sign In
+                    </a>
+                    <a href="{% url 'register' %}" class="pixel-btn pixel-btn-sm pixel-btn-violet">
+                        Daftar
+                    </a>
+                {% endif %}
+            </div>
+
+            <button type="button" id="mobile-menu-btn" class="pixel-mobile-btn" aria-expanded="false" aria-controls="mobile-menu">
+                ☰ MENU
+            </button>
+        </div>
+
+        <div id="mobile-menu" class="pixel-mobile-menu">
+            <a href="/" class="pixel-nav-link {% if request.path == '/' %}active{% endif %}">🏠 Beranda</a>
+            <a href="/arena/" class="pixel-nav-link {% if '/arena' in request.path %}active{% endif %}">⚡ Arena Jawara</a>
+            <a href="/leaderboard/" class="pixel-nav-link {% if '/leaderboard' in request.path %}active{% endif %}">🏆 Papan Peringkat</a>
+            <a href="/kompas/" class="pixel-nav-link {% if '/kompas' in request.path %}active{% endif %}">🧭 Kompas Belajar</a>
+            <a href="/pustaka/" class="pixel-nav-link {% if '/pustaka' in request.path %}active{% endif %}">📚 Pustaka Belajar</a>
+            <a href="/peta/" class="pixel-nav-link {% if '/peta' in request.path %}active{% endif %}">🗺️ Peta Budaya</a>
+            <a href="/cerita/" class="pixel-nav-link {% if '/cerita' in request.path %}active{% endif %}">💬 Cerita Kami</a>
+            <div style="border-top:2px solid var(--ultra-violet);padding-top:10px;margin-top:4px;display:flex;gap:8px;flex-wrap:wrap;">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'profile' %}" class="pixel-btn pixel-btn-sm pixel-btn-green">👤 {{ user.first_name|default:user.username }}</a>
+                    <a href="{% url 'logout' %}" class="pixel-btn pixel-btn-sm pixel-btn-danger">Keluar</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="pixel-btn pixel-btn-sm pixel-btn-gold">🔑 Sign In</a>
+                    <a href="{% url 'register' %}" class="pixel-btn pixel-btn-sm pixel-btn-violet">✨ Daftar</a>
+                {% endif %}
             </div>
         </div>
     </nav>
 
-    
     <main>
+        {% block back_bar %}
+        <div class="pixel-back-bar">
+            <div class="pixel-back-bar-inner">
+                <a href="/" class="pixel-back-link">← KEMBALI KE BERANDA</a>
+                <span class="pixel-badge pixel-badge-violet">
+                    {% block page_badge %}🎮 GAMELOKA 8-BIT{% endblock %}
+                </span>
+            </div>
+        </div>
+        {% endblock %}
+
         {% block content %}{% endblock %}
     </main>
 
-
-    <footer style="background: #1a1a1a; color: white; padding: 48px 24px; border-top: 2px solid #FF9D3D;">
-        <div style="max-width: 1280px; margin: 0 auto;">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 32px; margin-bottom: 32px;">
-               
-                <div>
-                    <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 12px; color: #FF9D3D;">Gameloka</h3>
-                    <p style="color: #999; font-size: 14px; line-height: 1.6;">
-                        Platform pelestarian Bahasa Betawi berbasis gamifikasi
-                    </p>
-                </div>
-
-               
-                <div>
-                    <h4 style="font-weight: 700; margin-bottom: 16px;">Fitur</h4>
-                    <ul style="list-style: none;">
-                        <li style="margin-bottom: 8px;"><a href="#" style="color: #999; text-decoration: none; font-size: 14px; transition: color 0.3s;">Arena Jawara</a></li>
-                        <li style="margin-bottom: 8px;"><a href="#" style="color: #999; text-decoration: none; font-size: 14px; transition: color 0.3s;">Leaderboard</a></li>
-                        <li style="margin-bottom: 8px;"><a href="#" style="color: #999; text-decoration: none; font-size: 14px; transition: color 0.3s;">Kompas Belajar</a></li>
-                        <li><a href="#" style="color: #999; text-decoration: none; font-size: 14px; transition: color 0.3s;">Peta Budaya</a></li>
-                    </ul>
-                </div>
-
-              
-                <div>
-                    <h4 style="font-weight: 700; margin-bottom: 16px;">Tentang</h4>
-                    <ul style="list-style: none;">
-                        <li style="margin-bottom: 8px;"><a href="#" style="color: #999; text-decoration: none; font-size: 14px; transition: color 0.3s;">Tentang Kami</a></li>
-                        <li style="margin-bottom: 8px;"><a href="#" style="color: #999; text-decoration: none; font-size: 14px; transition: color 0.3s;">Tim</a></li>
-                        <li style="margin-bottom: 8px;"><a href="#" style="color: #999; text-decoration: none; font-size: 14px; transition: color 0.3s;">Blog</a></li>
-                        <li><a href="#" style="color: #999; text-decoration: none; font-size: 14px; transition: color 0.3s;">Kontak</a></li>
-                    </ul>
-                </div>
-
-            
-                <div>
-                    <h4 style="font-weight: 700; margin-bottom: 16px;">Ikuti Kami</h4>
-                    <div style="display: flex; gap: 16px;">
-                        <a href="#" style="font-size: 20px; transition: transform 0.3s;">f</a>
-                        <a href="#" style="font-size: 20px; transition: transform 0.3s;">𝕏</a>
-                        <a href="#" style="font-size: 20px; transition: transform 0.3s;">in</a>
-                        <a href="#" style="font-size: 20px; transition: transform 0.3s;">📱</a>
-                    </div>
-                </div>
+    <footer class="pixel-footer">
+        <div class="pixel-footer-grid">
+            <div>
+                <div class="pixel-footer-heading">🎮 GAMELOKA 8-BIT</div>
+                <p style="color:var(--lavender-muted);font-size:0.88rem;line-height:1.6;">
+                    Platform pelestarian Bahasa &amp; Sastra Betawi berbasis gamifikasi interaktif: Bahasa, Budaya, dan Permainan.
+                </p>
             </div>
-
-            <div style="border-top: 1px solid #333; padding-top: 24px; text-align: center; color: #666; font-size: 14px;">
-                <p>&copy; 2024 Gameloka. Hak Cipta Dilindungi.</p>
+            <div>
+                <div class="pixel-footer-heading">Menu Utama</div>
+                <ul class="pixel-footer-links">
+                    <li><a href="/">🏠 Beranda &amp; Dongeng Marakarma</a></li>
+                    <li><a href="/arena/">⚡ Arena Jawara</a></li>
+                    <li><a href="/leaderboard/">🏆 Papan Peringkat</a></li>
+                    <li><a href="/kompas/">🧭 Kompas Belajar</a></li>
+                </ul>
             </div>
+            <div>
+                <div class="pixel-footer-heading">Eksplorasi Budaya</div>
+                <ul class="pixel-footer-links">
+                    <li><a href="/pustaka/">📚 Pustaka Belajar</a></li>
+                    <li><a href="/peta/">🗺️ Peta Budaya Betawi</a></li>
+                    <li><a href="/cerita/">💬 Cerita Kami (Komunitas)</a></li>
+                    {% if user.is_authenticated %}
+                    <li><a href="{% url 'profile' %}">👤 Profil Jawara</a></li>
+                    {% else %}
+                    <li><a href="{% url 'login' %}">🔑 Sign In / Masuk</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+        <div class="pixel-footer-bottom">
+            <span>&copy; 2026 Gameloka — Pelestarian Bahasa &amp; Sastra Betawi</span>
+            <span class="font-hud" style="color:var(--saffron);">★ HIKAYAT MARAKARMA EDITION ★</span>
         </div>
     </footer>
 
-    <!-- Container untuk Bang Buay Virtual Assistant -->
-    <div id="bang-buay-va-container"></div>
+    <!-- Bang Buay Chatbot -->
+    <div id="bang-buay-va-container"
+         data-authenticated="{% if user.is_authenticated %}true{% else %}false{% endif %}"
+         data-buaya-img="{% static 'images/buaya.png' %}"
+         data-login-url="{% url 'login' %}"></div>
 
-    <script src="{% static 'js/home.js' %}"></script>
-    
-    <!-- Bang Buay Virtual Assistant Script -->
-    {% if user.is_authenticated %}
-    <script type="module">
-        // Dynamically import dan mount VA Bubble
-        import('/static/fitur-ai/va-bubble.js').then(module => {
-            if (window.mountVABubble) {
-                window.mountVABubble({ 
-                    isAuthenticated: true
-                });
-            }
-        }).catch(err => {
-            console.log('VA Bubble tidak tersedia:', err);
-        });
-    </script>
-    {% endif %}
-    
+    <script src="{% static 'js/home.js' %}?v=20261121v3"></script>
+    <script src="{% static 'js/bang_buay_va.js' %}?v=20261121v4"></script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>

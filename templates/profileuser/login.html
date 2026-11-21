@@ -4,186 +4,200 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Gameloka</title>
+    <title>Sign In - Gameloka 8-Bit</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Silkscreen:wght@400;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/pixel_theme.css' %}?v=20261121v3">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #FF9D3D 0%, #FFC400 50%, #A4C639 100%);
+        .auth-shell {
             min-height: 100vh;
+            background:
+                radial-gradient(circle at 20% 20%, rgba(89, 80, 130, 0.45) 0%, transparent 45%),
+                radial-gradient(circle at 80% 80%, rgba(65, 100, 74, 0.4) 0%, transparent 45%),
+                var(--dark-purple);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .auth-top-bar {
+            max-width: 1100px;
+            width: 100%;
+            margin: 0 auto 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .auth-grid {
+            max-width: 1040px;
+            width: 100%;
+            margin: auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 36px;
+            align-items: center;
+        }
+
+        .auth-mascot-card {
+            padding: 30px;
+            text-align: center;
+        }
+
+        .auth-mascot-frame {
+            width: 220px;
+            height: 220px;
+            margin: 0 auto 20px;
+            background: var(--dark-green);
+            border: 4px solid var(--saffron);
+            box-shadow: 6px 6px 0 var(--dark-purple-deep);
+            padding: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 24px;
+        }
+
+        .input-icon-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-icon-left {
+            position: absolute;
+            left: 12px;
+            font-size: 16px;
+            pointer-events: none;
+        }
+
+        .input-toggle-right {
+            position: absolute;
+            right: 10px;
+            background: none;
+            border: none;
+            color: var(--saffron);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px;
+        }
+
+        @media (max-width: 820px) {
+            .auth-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
         }
     </style>
 </head>
 <body>
-<div style="width: 100%; max-width: 1200px; display: flex; align-items: center; gap: 60px;">
-   
-    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px;">
-       
-        <div style="width: 280px; height: 280px; background: white; border-radius: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 40px rgba(0,0,0,0.15);">
-            <img src="{% static 'images/buaya.png' %}" alt="Gameloka Mascot" style="width: 100%; height: 100%; object-fit: contain; padding: 20px;">
-        </div>
-        
-       
-        <div style="text-align: center;">
-            <h2 style="font-size: 28px; font-weight: 700; color: white; margin: 0 0 12px 0;">Selamat Datang!</h2>
-            <p style="font-size: 16px; color: rgba(255,255,255,0.95); margin: 0; font-weight: 500; line-height: 1.5;">Masuk ke akun Anda untuk lanjutkan petualangan di Gameloka</p>
-        </div>
+<div class="auth-shell">
+    <div class="auth-top-bar">
+        <a href="/" class="pixel-back-link">← KEMBALI KE BERANDA</a>
+        <span class="pixel-badge pixel-badge-violet">🔐 GERBANG MASUK GAMELOKA</span>
     </div>
 
-   
-    <div style="flex: 1; width: 100%; max-width: 420px;">
-        <div style="background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); overflow: hidden;">
-            
-            <div style="background: linear-gradient(135deg, #FF9D3D 0%, #FFC400 100%); padding: 40px 32px; text-align: center;">
-                <h1 style="font-size: 28px; font-weight: 700; color: white; margin: 0; line-height: 1.2;">Selamat Datang!</h1>
-                <p style="font-size: 14px; color: rgba(255,255,255,0.9); margin: 8px 0 0 0; font-weight: 500;">Masuk ke akun Anda untuk lanjutkan</p>
+    <div class="auth-grid">
+        <!-- Left Pixel Mascot Showcase -->
+        <div class="pixel-panel-green auth-mascot-card">
+            <div class="auth-mascot-frame">
+                <img src="{% static 'images/buaya.png' %}" alt="Gameloka Mascot" class="pixel-img" style="width:100%;height:100%;object-fit:contain;">
+            </div>
+            <span class="pixel-badge pixel-badge-gold" style="margin-bottom:12px;">🐊 BANG BUAY MENYAMBUTMU</span>
+            <h2 class="font-pixel" style="color:var(--saffron);font-size:1.15rem;margin-bottom:12px;">
+                SELAMAT DATANG, JAWARA!
+            </h2>
+            <p style="color:var(--cream);font-size:0.94rem;line-height:1.6;">
+                Masuk ke akun Gameloka untuk membuka Arena Jawara, Papan Peringkat, Kompas Belajar, Pustaka Belajar, Peta Budaya, Cerita Kami, dan Bang Buay Chatbot!
+            </p>
+        </div>
+
+        <!-- Right Sign In Card -->
+        <div class="pixel-panel-gold" style="overflow:hidden;">
+            <div style="background:linear-gradient(90deg, var(--ultra-violet) 0%, var(--dark-purple) 100%);padding:26px 28px;border-bottom:3px solid var(--saffron);text-align:center;">
+                <h1 class="font-pixel" style="font-size:1.1rem;color:var(--saffron);margin-bottom:8px;">SIGN IN AKUN</h1>
+                <p style="font-size:0.88rem;color:var(--lavender-muted);">Lanjutkan petualangan Bahasa &amp; Budaya Betawi</p>
             </div>
 
-          
-            <div style="padding: 40px 32px;">
-                <form id="loginForm" style="display: flex; flex-direction: column; gap: 20px;">
+            <div style="padding:28px;">
+                {% if next_url %}
+                <div class="pixel-panel-green" style="padding:12px 14px;margin-bottom:18px;font-size:0.86rem;">
+                    🔒 <strong style="color:var(--saffron);">Sign In dulu ya!</strong> Masuk untuk langsung membuka fitur yang kamu pilih.
+                </div>
+                {% endif %}
+
+                <form id="loginForm" style="display:flex;flex-direction:column;gap:18px;">
                     {% csrf_token %}
-                    
-                    
-                    <div style="display: flex; flex-direction: column; gap: 8px;">
-                        <label style="font-size: 14px; font-weight: 600; color: #333;">Email</label>
-                        <div style="position: relative; display: flex; align-items: center;">
-                            <span style="position: absolute; left: 12px; font-size: 18px; pointer-events: none;">📧</span>
-                            <input 
-                                type="email" 
-                                name="email" 
+                    <input type="hidden" id="nextUrl" value="{{ next_url|default:'' }}">
+
+                    <div style="display:flex;flex-direction:column;gap:6px;">
+                        <label for="loginEmail" class="font-hud" style="font-size:0.82rem;color:var(--saffron);">Email</label>
+                        <div class="input-icon-wrap">
+                            <span class="input-icon-left">📧</span>
+                            <input
+                                type="email"
+                                name="email"
                                 id="loginEmail"
-                                placeholder="nama@email.com" 
-                                style="width: 100%; padding: 12px 12px 12px 44px; border: 2px solid #e8e8e8; border-radius: 8px; font-size: 14px; transition: all 0.3s; font-family: inherit;"
+                                class="pixel-input"
+                                placeholder="nama@email.com"
+                                style="padding-left:40px;"
                                 required
                             >
                         </div>
-                        <p id="emailError" style="color: #e74c3c; font-size: 12px; margin: 0; display: none;"></p>
+                        <p id="emailError" style="color:var(--danger);font-size:0.78rem;display:none;"></p>
                     </div>
 
-                    <div style="display: flex; flex-direction: column; gap: 8px;">
-                        <label style="font-size: 14px; font-weight: 600; color: #333;">Password</label>
-                        <div style="position: relative; display: flex; align-items: center;">
-                            <span style="position: absolute; left: 12px; font-size: 18px; pointer-events: none;">🔒</span>
-                            <input 
-                                type="password" 
-                                name="password" 
+                    <div style="display:flex;flex-direction:column;gap:6px;">
+                        <label for="loginPassword" class="font-hud" style="font-size:0.82rem;color:var(--saffron);">Password</label>
+                        <div class="input-icon-wrap">
+                            <span class="input-icon-left">🔒</span>
+                            <input
+                                type="password"
+                                name="password"
                                 id="loginPassword"
-                                placeholder="Masukkan password" 
-                                style="width: 100%; padding: 12px 44px 12px 44px; border: 2px solid #e8e8e8; border-radius: 8px; font-size: 14px; transition: all 0.3s; font-family: inherit;"
+                                class="pixel-input"
+                                placeholder="Masukkan password"
+                                style="padding-left:40px;padding-right:42px;"
                                 required
                             >
-                            <button 
-                                type="button" 
-                                id="togglePassword"
-                                style="position: absolute; right: 12px; background: none; border: none; font-size: 18px; cursor: pointer; padding: 0; transition: transform 0.2s;"
-                                onmouseover="this.style.transform='scale(1.1)'"
-                                onmouseout="this.style.transform='scale(1)'"
-                            >
-                                👁️
-                            </button>
+                            <button type="button" id="togglePassword" class="input-toggle-right" aria-label="Tampilkan password">👁️</button>
                         </div>
-                        <p id="passwordError" style="color: #e74c3c; font-size: 12px; margin: 0; display: none;"></p>
+                        <p id="passwordError" style="color:var(--danger);font-size:0.78rem;display:none;"></p>
                     </div>
 
-                    <button 
-                        type="submit" 
-                        id="loginSubmit"
-                        style="width: 100%; margin-top: 24px; background: linear-gradient(135deg, #FF9D3D 0%, #FFC400 100%); color: white; font-weight: 700; padding: 14px 16px; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 12px rgba(255, 157, 61, 0.3);"
-                        onmouseover="this.style.boxShadow='0 6px 20px rgba(255, 157, 61, 0.4)'; this.style.transform='translateY(-2px)'"
-                        onmouseout="this.style.boxShadow='0 4px 12px rgba(255, 157, 61, 0.3)'; this.style.transform='translateY(0)'"
-                    >
-                        Masuk
+                    <button type="submit" id="loginSubmit" class="pixel-btn pixel-btn-lg pixel-btn-gold" style="width:100%;margin-top:6px;">
+                        🔑 MASUK SEKARANG
                     </button>
                 </form>
 
-                <div id="loginAlert" style="margin-top: 16px; padding: 12px 16px; border-radius: 8px; display: none; border-left: 4px solid transparent;" role="alert">
-                    <p id="alertMessage" style="font-size: 14px; margin: 0; font-weight: 500;"></p>
+                <div id="loginAlert" style="margin-top:16px;padding:12px 14px;display:none;border:2px solid transparent;" role="alert">
+                    <p id="alertMessage" style="font-size:0.88rem;margin:0;font-weight:600;"></p>
                 </div>
 
-                <div style="margin-top: 24px; display: flex; flex-direction: column; gap: 16px;">
-                    <p style="text-align: center; margin: 0; font-size: 13px; color: #666;">
-                        <a href="#" style="color: #FF9D3D; text-decoration: none; font-weight: 600; transition: all 0.3s;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Lupa Password?</a>
+                <div style="margin-top:22px;padding-top:16px;border-top:2px solid var(--ultra-violet);text-align:center;">
+                    <p style="font-size:0.88rem;color:var(--lavender-muted);">
+                        Belum punya akun?
+                        <a href="{% url 'register' %}{% if next_url %}?next={{ next_url|urlencode }}{% endif %}" style="color:var(--saffron);font-weight:700;text-decoration:underline;">
+                            Daftar di sini
+                        </a>
                     </p>
-                    <div style="border-top: 1px solid #e8e8e8; padding-top: 16px;">
-                        <p style="text-align: center; margin: 0; font-size: 13px; color: #666;">
-                            Belum punya akun? 
-                            <a href="{% url 'register' %}" style="color: #FF9D3D; text-decoration: none; font-weight: 700; transition: all 0.3s;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Daftar di sini</a>
-                        </p>
-                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<style>
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    div[style*="background: white"] {
-        animation: fadeIn 0.3s ease-out;
-    }
-
-    input[type="email"],
-    input[type="password"] {
-        box-sizing: border-box;
-    }
-
-    input[type="email"]:focus,
-    input[type="password"]:focus {
-        border-color: #FF9D3D !important;
-        box-shadow: 0 0 0 3px rgba(255, 157, 61, 0.1) !important;
-    }
-
-    button:disabled {
-        opacity: 0.6 !important;
-        cursor: not-allowed !important;
-    }
-
-    @media (max-width: 768px) {
-        div[style*="max-width: 1200px"] {
-            flex-direction: column !important;
-            gap: 30px !important;
-        }
-        
-        div[style*="flex: 1"] {
-            width: 100% !important;
-        }
-
-        div[style*="max-width: 420px"] {
-            max-width: 100% !important;
-        }
-    }
-</style>
-
 <script>
-
     const togglePasswordBtn = document.getElementById('togglePassword');
     const passwordInput = document.getElementById('loginPassword');
-    
-    togglePasswordBtn.addEventListener('click', function(e) {
+
+    togglePasswordBtn.addEventListener('click', function (e) {
         e.preventDefault();
         const type = passwordInput.type === 'password' ? 'text' : 'password';
         passwordInput.type = type;
-        this.textContent = type === 'password' ? '👁️' : '👁️‍🗨️';
+        this.textContent = type === 'password' ? '👁️' : '🙈';
     });
 
     const loginForm = document.getElementById('loginForm');
@@ -193,20 +207,21 @@
     const emailError = document.getElementById('emailError');
     const passwordError = document.getElementById('passwordError');
 
-    loginForm.addEventListener('submit', async function(e) {
+    loginForm.addEventListener('submit', async function (e) {
         e.preventDefault();
-    
+
         emailError.style.display = 'none';
         passwordError.style.display = 'none';
         loginAlert.style.display = 'none';
-        
+
         const email = document.getElementById('loginEmail').value.trim();
         const password = document.getElementById('loginPassword').value;
-        
+        const nextUrl = document.getElementById('nextUrl')?.value || '';
+
         loginSubmit.disabled = true;
         const originalText = loginSubmit.textContent;
-        loginSubmit.textContent = 'Sedang Masuk...';
-        
+        loginSubmit.textContent = '⏳ SEDANG MASUK...';
+
         try {
             const response = await fetch('{% url "api_login" %}', {
                 method: 'POST',
@@ -216,39 +231,40 @@
                 },
                 body: JSON.stringify({
                     email: email,
-                    password: password
+                    password: password,
+                    next: nextUrl
                 })
             });
-            
+
             const data = await response.json();
-            
+
             if (data.status === 'success') {
-                loginAlert.style.backgroundColor = '#d4edda';
-                loginAlert.style.borderLeftColor = '#28a745';
+                loginAlert.style.backgroundColor = 'var(--dark-green)';
+                loginAlert.style.borderColor = 'var(--hunter-green-light)';
                 alertMessage.textContent = '✓ ' + data.message;
-                alertMessage.style.color = '#155724';
+                alertMessage.style.color = 'var(--saffron)';
                 loginAlert.style.display = 'block';
-                
+
                 setTimeout(() => {
-                    window.location.href = data.redirect;
-                }, 1000);
+                    window.location.href = data.redirect || '/';
+                }, 650);
             } else {
-                loginAlert.style.backgroundColor = '#f8d7da';
-                loginAlert.style.borderLeftColor = '#f5222d';
+                loginAlert.style.backgroundColor = '#3a1a22';
+                loginAlert.style.borderColor = 'var(--danger)';
                 alertMessage.textContent = '✗ ' + data.message;
-                alertMessage.style.color = '#721c24';
+                alertMessage.style.color = '#ffd6d6';
                 loginAlert.style.display = 'block';
-                
+
                 loginSubmit.disabled = false;
                 loginSubmit.textContent = originalText;
             }
         } catch (error) {
-            loginAlert.style.backgroundColor = '#f8d7da';
-            loginAlert.style.borderLeftColor = '#f5222d';
+            loginAlert.style.backgroundColor = '#3a1a22';
+            loginAlert.style.borderColor = 'var(--danger)';
             alertMessage.textContent = '✗ Terjadi kesalahan: ' + error.message;
-            alertMessage.style.color = '#721c24';
+            alertMessage.style.color = '#ffd6d6';
             loginAlert.style.display = 'block';
-            
+
             loginSubmit.disabled = false;
             loginSubmit.textContent = originalText;
         }

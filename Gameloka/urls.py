@@ -46,6 +46,7 @@ urlpatterns = [
     path('leaderboard/', include('leaderboard.urls')),
     path('pustaka/', include('pustaka.urls')),
     path('peta/', include('peta.urls')),
+    path('cerita/', include('cerita.urls')),
     
     # API endpoint proxies for backward compatibility
     path('api/story/<str:story_id>/', proxy_api_story, name='api_story_proxy'),

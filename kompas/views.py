@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
+from django.contrib.auth.decorators import login_required
 from django.utils.safestring import mark_safe
 import json
 
@@ -109,6 +110,7 @@ LEARNING_PATH = [
 ]
 
 
+@login_required
 def kompas_view(request):
     """View untuk halaman Kompas Belajar"""
     context = {
@@ -120,6 +122,12 @@ def kompas_view(request):
 @require_http_methods(["GET"])
 def get_topic_detail(request):
     """API endpoint untuk mendapatkan detail topik"""
+    if not request.user.is_authenticated:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Authentication required'
+        }, status=401)
+
     topic_id = request.GET.get('id')
     
     for level in LEARNING_PATH:
